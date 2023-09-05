@@ -32,16 +32,27 @@ st.set_page_config(
 )
 
 # Center-align subheading and image using HTML <div> tags
+# st.markdown(
+#     """
+#     <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+#         <h2>WhatsApp Chats Analyzer</h2>
+
+#     </div>
+#     """,
+#     unsafe_allow_html=True
+# )
+
 st.markdown(
     """
     <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
         <h2>WhatsApp Chats Analyzer</h2>
-
+        <img src="rachit-tank-lZBs-lD9LPQ-unsplash.jpg.jpg" alt="WhatsApp Image" width="400">
     </div>
     """,
     unsafe_allow_html=True
 )
-st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
+
+# st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
 
 # # Add the subheading and image in a container
 # with st.container():
