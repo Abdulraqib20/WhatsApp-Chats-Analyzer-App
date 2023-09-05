@@ -84,9 +84,6 @@ uploaded_file = st.file_uploader("Upload a Text(.txt) File", type=["txt"])
 # Check if a file was uploaded
 if uploaded_file:
     st.success("File successfully uploaded.")
-
-    # Read the uploaded file into the DataFrame
-    df = pd.read_csv(uploaded_file)
     
     # Process the uploaded file and convert to a Pandas DataFrame
     with st.spinner("Loading📍..."):
