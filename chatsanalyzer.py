@@ -367,13 +367,30 @@ with st.expander('Most Active Dates'):
     st.plotly_chart(fig)
     
 # Most active times
-with st.expander('Most Active Times'):
-    time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
-    fig = px.bar(time_counts, x='count', y='time', orientation='h', color='time',
-                 title='Most Active Times of the Day')
-    fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Time', showlegend=False)
+# Create a Streamlit expander for displaying the most active time chart
+with st.expander("Most Active Time", expanded=True):
+    # Ensure the 'time' column is in datetime format if it's not already
+    time_counts['time'] = pd.to_datetime(time_counts['time'])
     
+    # Create the bar chart
+    fig = px.bar(
+        time_counts,
+        x='count',
+        y='time',
+        orientation='h',
+        color='time',
+        labels={'time': 'Time', 'count': 'Message Count'},
+        title='Most Active Time of the Day',
+    )
+
+    # Customize the chart layout
+    fig.update_xaxes(title_text='Message Count')
+    fig.update_yaxes(title_text='Time of Day')
+    fig.update_layout(width=800, height=500, showlegend=False)
+
+    # Display the chart using Plotly
     st.plotly_chart(fig)
+
     
 # Most active hour of the Day
 with st.expander('Most Active Hours of the Day'):
