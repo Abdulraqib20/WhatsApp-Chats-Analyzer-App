@@ -31,33 +31,18 @@ st.set_page_config(
     layout="wide",
 )
 
-# Center-align subheading and image using HTML <div> tags
-# st.markdown(
-#     """
-#     <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-#         <h2>WhatsApp Chats Analyzer</h2>
-
-#     </div>
-#     """,
-#     unsafe_allow_html=True
-# )
-
+Center-align subheading and image using HTML <div> tags
 st.markdown(
     """
     <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
         <h2>WhatsApp Chats Analyzer</h2>
-        <img src="rachit-tank-lZBs-lD9LPQ-unsplash.jpg.jpg" alt="WhatsApp Image" width="400">
+
     </div>
     """,
     unsafe_allow_html=True
 )
 
-# st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
-
-# # Add the subheading and image in a container
-# with st.container():
-#     st.subheader("WhatsApp Chats Analyzer")
-#     st.image("wa1.jpg")
+st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
 
 
 # Add an introductory paragraph
