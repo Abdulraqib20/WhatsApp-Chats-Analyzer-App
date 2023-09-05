@@ -347,7 +347,7 @@ with st.expander('Most Active Group Participants'):
 # Filter out messages that contain media files
 non_media = df[~df['message'].str.contains('<Media omitted>')]
 
-with st.expander('Most Used Words (Excluding Media)'):
+with st.expander('Most Used Words'):
     all_messages = ' '.join(non_media['message'].astype(str).tolist())
     all_words = all_messages.split()
     word_freq = collections.Counter(all_words)
@@ -356,3 +356,64 @@ with st.expander('Most Used Words (Excluding Media)'):
     counts = [count[1] for count in top_words]
     
     st.bar_chart(pd.DataFrame({'Word': words, 'Count': counts}).set_index('Word'))
+
+
+# Word CLoud
+with st.expander('Word Cloud of Messages'):
+    all_messages = ' '.join(non_media['message'].astype(str).tolist())
+    all_words = all_messages.split()
+    word_freq = collections.Counter(all_words)
+
+    # Create a WordCloud
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_messages)
+    fig = px.imshow(wordcloud.to_array())
+    fig.update_layout(title_text="Word Cloud")
+    fig.update_xaxes(showticklabels=False)
+    fig.update_yaxes(showticklabels=False)
+    st.plotly_chart(fig)
+    
+# Most Active Dates
+df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y').dt.date
+
+with st.expander('Most Active Dates'):
+    activity_by_date = df['date'].value_counts().reset_index()
+    activity_by_date.columns = ['Date', 'Activity Count']
+    
+    fig = px.bar(activity_by_date, x='Date', y='Activity Count', title='Most Active Dates')
+    fig.update_traces(marker_color='rgb(63, 72, 204)') 
+    fig.update_xaxes(categoryorder='total descending')
+    st.plotly_chart(fig)
+    
+# Most active times
+with st.expander('Most Active Times'):
+    time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+    fig = px.bar(time_counts, x='count', y='time', orientation='h', color='time',
+                 title='Most Active Times of the Day')
+    fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Time', showlegend=False)
+    
+    st.plotly_chart(fig)
+    
+# Most active hour of the Day
+with st.expander('Most Active Hours of the Day'):
+    df['hour'] = df['time'].str.split(':', expand=True)[0]
+    time_counts = df['hour'].value_counts().reset_index().rename(columns={'index': 'hour', 'hour': 'count'})
+    time_counts = time_counts.sort_values(by='hour')
+    
+    fig = px.bar(time_counts, x='hour', y='count', color='hour',
+                 title='Most Active Times (Hourly)')
+    fig.update_layout(xaxis_title='Hour of the Day', yaxis_title='Number of Messages', showlegend=False)
+    st.plotly_chart(fig)
+    
+# Most active Days of the Week
+df['date'] = pd.to_datetime(df['date'])
+with st.expander('Most Active Days of the Week'):
+    df['weekday'] = df['date'].dt.day_name()
+    day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'count'})
+    days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
+    day_counts = day_counts.sort_values('weekday')
+
+    fig = px.bar(day_counts, x='count', y='weekday', orientation='h', color='weekday',
+                 title='Most Active Days of the Week')
+    fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Day of the Week', showlegend=False)
+    st.plotly_chart(fig)
