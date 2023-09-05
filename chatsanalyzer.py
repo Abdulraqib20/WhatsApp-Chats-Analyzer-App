@@ -31,7 +31,7 @@ st.set_page_config(
     layout="wide",
 )
 
-Center-align subheading and image using HTML <div> tags
+# Center-align subheading and image using HTML <div> tags
 st.markdown(
     """
     <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
@@ -41,7 +41,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
 
 
