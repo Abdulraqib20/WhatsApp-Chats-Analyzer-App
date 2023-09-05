@@ -2,9 +2,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set_theme(style='white')
 import plotly.express as px
 
 import re
@@ -211,7 +208,7 @@ if uploaded_file:
                 st.markdown(f'<div style="max-height: 300px; overflow-y: scroll;">{pd.DataFrame(unique_values, columns=[column]).to_html(index=False)}</div>', unsafe_allow_html=True)
         
     # export the dataset to Excel format
-    if st.button("Export to Excel File"):
+    if st.button("Export Data to Excel File"):
         # Create a BytesIO buffer for writing the Excel file
         excel_buffer = BytesIO()
         with pd.ExcelWriter(excel_buffer, engine="xlsxwriter") as writer:
@@ -311,15 +308,6 @@ with st.expander('Most Active Group Participants'):
     fig.update_traces(marker_color='rgb(63, 72, 204)')
     fig.update_layout(xaxis_title='Member', yaxis_title='Activity Count', xaxis_tickangle=-45, font=dict(size=14))
     st.plotly_chart(fig, use_container_width=True)
-    
-# Most Mentioned Members
-# Most Mentioned Members
-with st.expander('Most Mentioned Members'):
-    # Assuming you have a mentions column in your DataFrame
-    mentions_counts = df['mentions'].apply(lambda x: len(x)).value_counts().reset_index()
-    mentions_counts.columns = ['Mentions Count', 'Messages Count']
-    fig = px.bar(mentions_counts, x='Mentions Count', y='Messages Count', title='Most Mentioned Members')
-    st.plotly_chart(fig)
 
 
 # Emoji dist
@@ -365,7 +353,10 @@ with st.expander('Most Used Words'):
     words = [word[0] for word in top_words]
     counts = [count[1] for count in top_words]
     
-    st.bar_chart(pd.DataFrame({'Word': words, 'Count': counts}).set_index('Word'))
+    fig = px.bar(pd.DataFrame({'Word': words, 'Count': counts}), x='Word', y='Count')
+    fig.update_xaxes(tickangle=0) 
+    
+    st.plotly_chart(fig)
 
 
 # Word CLoud
@@ -428,6 +419,21 @@ with st.expander('Most Active Days of the Week'):
     fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Day of the Week', showlegend=False)
     st.plotly_chart(fig)
     
+# Messages Sent Per Month
+with st.expander('Messages Sent Per Month'):
+    df['month'] = pd.to_datetime(df['date']).dt.strftime('%B')
+    messages_per_month = df['month'].value_counts().reset_index()
+    messages_per_month.columns = ['Month', 'Messages Sent']
+    months_order = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    messages_per_month['Month'] = pd.Categorical(messages_per_month['Month'], categories=months_order, ordered=True)
+    messages_per_month = messages_per_month.sort_values(by='Month')
+    
+    fig = px.bar(messages_per_month, x='Month', y='Messages Sent', title='Messages Sent Per Month')
+    fig.update_traces(marker_color='rgb(63, 72, 204)')
+    fig.update_layout(xaxis_title='Month', yaxis_title='Messages Sent', font=dict(size=14))
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
 # Visualize message count over time
 with st.expander('Message Count Over Time'):
     message_count_over_time = df.groupby(['date']).size().reset_index(name='message_count')
@@ -444,3 +450,19 @@ with st.expander('Member Activity Over Time'):
     member_activity_over_time = df.groupby(['date', 'member']).size().reset_index(name='message_count')
     fig = px.line(member_activity_over_time, x='date', y='message_count', color='member', title='Member Activity Over Time')
     st.plotly_chart(fig)
+
+    
+# footer
+
+# line separator
+st.markdown('<hr style="border: 2px solid #ddd;">', unsafe_allow_html=True)
+
+# footer text
+st.markdown(
+    """
+    <div style="text-align: center; padding: 10px;">
+        Developed by <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
