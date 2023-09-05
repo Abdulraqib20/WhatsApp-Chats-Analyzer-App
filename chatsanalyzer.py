@@ -88,6 +88,10 @@ def extract_member_name(message):
 uploaded_file = st.file_uploader("Upload a Text(.txt) File", type=["txt"])
 
 # Check if a file was uploaded
+# Create a file uploader button for TXT files
+uploaded_file = st.file_uploader("Upload a Text(.txt) File", type=["txt"])
+
+# Check if a file was uploaded
 if uploaded_file:
     st.success("File successfully uploaded.")
     
