@@ -26,7 +26,7 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 
 # Create a Streamlit app
 st.set_page_config(
-    page_title="Raqib's WhatsApp Chats Analyzer",
+    page_title="WhatsApp Chats Analyzer",
     page_icon="icons8-whatsapp-48.png",
     layout="wide",
 )
@@ -51,14 +51,14 @@ st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
 
 # Add an introductory paragraph
 st.markdown("""
-This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib, known as raqibcodes. This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
+Hey there! Ever wondered what's really going on in your WhatsApp chats? Introducing the WhatsApp Chats Analyzer, brought to you by Raqib (aka raqibcodes)! This nifty tool takes your WhatsApp chat and works its magic, revealing all sorts of cool stuff. Check out message stats, member interactions, and even the vibe with sentiment analysis. It's like a chat detective! Just upload your chatand have fun with it!
 """)
 
-# Display a GIF image with a caption and custom dimensions
-st.caption("Demo on how to export WhatsApp chats to Text File")
-video_url = "demo.gif" 
-video_width = 1000 
-st.image(video_url, width=video_width)
+# Display a GIF video with a caption and custom dimensions
+st.subheader("Demo Video")
+video_url = "demo.mp4" 
+video_width = 600  # Adjust the width as needed
+st.video(video_url)
 
 # Function to remove emojis from a string
 def remove_emojis(text):
@@ -84,10 +84,6 @@ def extract_member_name(message):
     return ''
 
 
-# Create a file uploader button for TXT files
-uploaded_file = st.file_uploader("Upload a Text(.txt) File", type=["txt"])
-
-# Check if a file was uploaded
 # Create a file uploader button for TXT files
 uploaded_file = st.file_uploader("Upload a Text(.txt) File", type=["txt"])
 
@@ -249,7 +245,7 @@ media_messages = df[df['message'] == '<Media omitted>'].shape[0]
 
 # Calculate emojis
 df["emoji"] = df["message"].apply(split_count)
-# emojis = sum(df['emoji'].str.len())
+emojis = sum(df['emoji'].str.len())
 
 # Calculate URL links
 URLPATTERN = r'(https?://\S+)'
@@ -259,7 +255,7 @@ links = np.sum(df.urlcount)
 # Display quick stats
 st.write(f"Total Messages: {total_messages}")
 st.write(f"Media Messages: {media_messages}")
-# st.write(f"Total Emojis: {emojis}")
+st.write(f"Total Emojis: {emojis}")
 st.write(f"Total Links: {links}")
 
 st.subheader("Member Stats")
