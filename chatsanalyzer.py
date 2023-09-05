@@ -52,8 +52,7 @@ This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoug
 # Display a GIF image with a caption and custom dimensions
 st.caption("Demo on how to export WhatsApp chats to Text File")
 video_url = "demo.gif" 
-video_width = 1200 
-st.image(video_url, width=video_width)
+st.image(video_url)
 
 # Function to remove emojis from a string
 def remove_emojis(text):
