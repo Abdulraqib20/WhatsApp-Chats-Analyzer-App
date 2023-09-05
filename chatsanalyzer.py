@@ -26,7 +26,7 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 
 # Create a Streamlit app
 st.set_page_config(
-    page_title="WhatsApp Chats Analyzer",
+    page_title="Raqib's WhatsApp Chats Analyzer",
     page_icon="icons8-whatsapp-48.png",
     layout="wide",
 )
@@ -54,37 +54,28 @@ st.markdown("""
 This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib, known as raqibcodes. This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
 """)
 
-# Display a GIF video with a caption and custom dimensions
+# Display a GIF image with a caption and custom dimensions
 st.caption("Demo on how to export WhatsApp chats to Text File")
 video_url = "demo.gif" 
 st.image(video_url)
 
-# Function to remove emojis from a string
-def remove_emojis(text):
-    emoji_pattern = re.compile(pattern="["
-                                       u"\U0001F600-\U0001F64F"  # emoticons
-                                       u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                                       u"\U0001F680-\U0001F6FF"  # transport & map symbols
-                                       u"\U0001F700-\U0001F77F"  # alchemical symbols
-                                       u"\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
-                                       u"\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
-                                       u"\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
-                                       u"\U0001FA00-\U0001FA6F"  # Chess Symbols
-                                       u"\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
-                                       u"\U0001F004-\U0001F0CF"  # Additional emoticons
-                                       u"\U0001F170-\U0001F251"  # Enclosed characters
-                                       "]+", flags=re.UNICODE)
-    return emoji_pattern.sub(r'', text)
+def date_time(s):
+    pattern = r'^\d{1,2}/\d{1,2}/\d{2}, \d{1,2}:\d{2}'
+    result = re.match(pattern, s)
+    if result:
+        return True
+    return False
 
-def extract_member_name(message):
-    match = re.match(r'^([^:]+)(:.+)?$', message)
-    if match:
-        return match.group(1).strip()
-    return ''
+def data_point(line):
+    split_line = line.split(' - ')
+    date_time_str = split_line[0]
+    date_str, time_str = date_time_str.split(', ')
+    message = ' - '.join(split_line[1:])
+    
+    return date_str, time_str, message
 
-
-# Create a file uploader button for TXT files
-uploaded_file = st.file_uploader("Upload a Text(.txt) File", type=["txt"])
+# Create a file upload widget
+uploaded_file = st.file_uploader("Upload your WhatsApp chat .txt file", type=["txt"])
 
 # Check if a file was uploaded
 if uploaded_file:
@@ -93,133 +84,113 @@ if uploaded_file:
     # Process the uploaded file and convert to a Pandas DataFrame
     with st.spinner("Loading📍..."):
         chat_data = uploaded_file.read().decode('utf-8').splitlines()
+
+        data = []
         
-        # Initialize data lists (your existing code)
-        dates = []
-        times = []
-        members = []
-        messages = []
-        message_types = []
-        message_lengths = []
-        reaction_counts = []
-        word_counts = []
-        mentions = []
-        emojis = []
-        
-        # Define regular expressions to extract data
-        message_regex = re.compile(r'^(\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}) - ([^:]+): (.+)$')
-        system_message_regex = re.compile(r'^(\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}) - (.+)$')
-        media_message_regex = re.compile(r'^(\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}) - ([^:]+) attached (\S+) \(.*\)$')
-        # Loop through chat data and extract required information (your existing code)
+        message_buffer = []
+        date, time, author = None, None, None
         for line in chat_data:
-            match = message_regex.match(line)
-            if match:
-                dates.append(match.group(1)[:10])
-                times.append(match.group(1)[11:])
-                member = extract_member_name(match.group(2))
-                members.append(member)
-                message_text = match.group(3)
-                message_text = remove_emojis(message_text)  # Remove emojis from the message text
-                messages.append(message_text)
-                message_types.append('text')
-                message_lengths.append(len(message_text))
-                reaction_counts.append(0)
-                word_counts.append(len(message_text.split()))
-                mentions.append(re.findall(r'@(\w+)', message_text))
-                emojis.append([])  # Emojis have already been removed from the message_text
+            line = line.strip()
+            if date_time(line):
+                if len(message_buffer) > 0:
+                    for message in message_buffer:
+                        data.append([date, time, author, message])
+                    message_buffer.clear()
+                date, time, message = data_point(line)
+                author, message = message.split(': ', 1) if ': ' in message else (np.nan, message)
+                message_buffer.append(message)
             else:
-                # Check if line contains a system message
-                match = system_message_regex.match(line)
-                if match:
-                    dates.append(match.group(1)[:10])
-                    times.append(match.group(1)[11:])
-                    members.append('System')
-                    messages.append(match.group(2))
-                    message_types.append('system')
-                    message_lengths.append(len(match.group(2)))
-                    reaction_counts.append(0)
-                    word_counts.append(len(match.group(2).split()))
-                    mentions.append([])
-                    emojis.append([])
-                else:
-                    # Check if line contains a media message
-                    match = media_message_regex.match(line)
-                    if match:
-                        dates.append(match.group(1)[:10])
-                        times.append(match.group(1)[11:])
-                        member = emoji.demojize(match.group(2)).strip()
-                        members.append(member)
-                        messages.append(match.group(3))
-                        message_types.append('media')
-                        message_lengths.append(0)
-                        reaction_counts.append(0)
-                        word_counts.append(0)
-                        mentions.append([])
-                        emojis.append([])
+                message_buffer.append(line)
+        
+        # Create a DataFrame
+        df = pd.DataFrame(data, columns=['date', 'time', 'member', 'message'])
 
-        # Create pandas dataframe from extracted data (your existing code)
-        df = pd.DataFrame({
-            'date': dates,
-            'time': times,
-            'member': members,
-            'message': messages,
-            'message_type': message_types,
-            'message_length': message_lengths,
-            'reaction_count': reaction_counts,
-            'word_count': word_counts,
-            'mentions': mentions,
-            'emojis': emojis
-        })
+        df['message_type'] = df['message'].apply(lambda x: 'media' if 'attached' in x else 'text')
+        df['message_length'] = df['message'].apply(len)
+        df['reaction_count'] = df['message'].apply(lambda x: len(re.findall(r'👍|❤️|😂|😢|😮|😡|🎉|👏', x)))
+        df['word_count'] = df['message'].apply(lambda x: len(re.findall(r'\b\w+\b', x)))
+        df['mentions'] = df['message'].apply(lambda x: ", ".join(re.findall(r'@(\w+)', x)))
+        df['emojis'] = df['message'].apply(lambda x: ", ".join(re.findall(r'[^\w\s,]', x)))
+        # df['message'] = df.apply(lambda row: row['message'].replace(f"{row['member']}: ", ""), axis=1)
+        # df['message'] = df['message'].str.replace(f"{df['member']}: ", "", regex=True)
+        # df['member'] = df['member'].apply(lambda x: re.escape(x))
+        # df['message'] = df['message'].str.replace(f"{df['member']}: ", "", regex=True)
         
-        # Filter out members with the name "System"
-        df = df[df['member'] != 'System']
+        # Function to remove member names from messages
+        # Function to remove member names from messages
+        # Function to remove member names from messages
+        def remove_member_names(df):
+            for index, row in df.iterrows():
+                message = str(row['message'])  # Ensure 'message' is a string
+                member = str(row['member'])    # Ensure 'member' is a string
+                if message.startswith(member + ': '):
+                    df.at[index, 'message'] = message[len(member) + 2:]
+            return df
+
+        # Apply the function to remove member names
+        df = remove_member_names(df)
+
+        # Remove non-breaking space from the "time" column
+        # df['time'] = df['time'].str.replace('\u202F', ' ')
+        # df['time'] = pd.to_datetime(df['time'], format='%I:%M %p').dt.strftime('%I:%M %p')
         
+        # Remove non-breaking space from the "time" column
+        df['time'] = df['time'].str.replace('\u202F', ' ')
+        if df['time'].str.match(r'^\d{2}:\d{2}$').all():
+            time_format = '%H:%M'  # 24-hour format
+        else:
+            time_format = '%I:%M %p'  # AM/PM format
+
+        df['time'] = pd.to_datetime(df['time'], format=time_format).dt.strftime('%I:%M %p')
+        df['date'] = pd.to_datetime(df['date'], format='%m/%d/%y')
+        df = df.dropna(subset=['member'])
+
         st.markdown(
-    f"""
-    <style>
-        div.stButton > button:first-child {{
-            background-color: #636EFA;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-        }}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+            f"""
+            <style>
+                div.stButton > button:first-child {{
+                    background-color: #636EFA;
+                    color: white;
+                    font-weight: bold;
+                    font-size: 18px;
+                }}
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    # Create a checkbox to toggle the visibility of the DataFrame
-    show_data = st.checkbox("Display Data")
+        # Create a checkbox to toggle the visibility of the DataFrame
+        show_data = st.checkbox("Display Data")
 
-    # Display the DataFrame if the checkbox is checked
-    if show_data:
-        st.dataframe(df)
-        
-        # Create a multiselect widget to select columns for unique values
-        selected_columns = st.multiselect("Display Unique Values of Columns", df.columns.tolist())
+        # Display the DataFrame if the checkbox is checked
+        if show_data:
+            st.dataframe(df)
+            
+            # Create a multiselect widget to select columns for unique values
+            selected_columns = st.multiselect("Display Unique Values of Columns", df.columns.tolist())
 
-        # Create an expander for displaying unique values
-        with st.expander("Unique Values", expanded=False):
-            for column in selected_columns:
-                st.subheader(f"Unique Values in {column}")
-                unique_values = pd.unique(df[column])
-                # Use custom CSS to enable scrolling
-                st.markdown(f'<div style="max-height: 300px; overflow-y: scroll;">{pd.DataFrame(unique_values, columns=[column]).to_html(index=False)}</div>', unsafe_allow_html=True)
-        
-    # export the dataset to Excel format
-    if st.button("Export Data to Excel File"):
-        # Create a BytesIO buffer for writing the Excel file
-        excel_buffer = BytesIO()
-        with pd.ExcelWriter(excel_buffer, engine="xlsxwriter") as writer:
-            df.to_excel(writer, sheet_name="WhatsApp_Chat", index=False)
+            # Create an expander for displaying unique values
+            with st.expander("Unique Values", expanded=False):
+                for column in selected_columns:
+                    st.subheader(f"Unique Values in {column}")
+                    unique_values = pd.unique(df[column])
+                    # Use custom CSS to enable scrolling
+                    st.markdown(f'<div style="max-height: 300px; overflow-y: scroll;">{pd.DataFrame(unique_values, columns=[column]).to_html(index=False)}</div>', unsafe_allow_html=True)
 
-        # Set the filename and download button label
-        excel_filename = "whatsapp_chats.xlsx"
-        st.write(f"Exporting to {excel_filename}...")
-        
-        # Prepare the Excel data for download
-        excel_data = excel_buffer.getvalue()
-        st.download_button(label="Click here to download the Excel file", data=excel_data, file_name=excel_filename, key="excel_download")
+        # Export the dataset to Excel format
+        if st.button("Export Data to Excel File"):
+            # Create a BytesIO buffer for writing the Excel file
+            excel_buffer = BytesIO()
+            with pd.ExcelWriter(excel_buffer, engine="xlsxwriter") as writer:
+                df.to_excel(writer, sheet_name="WhatsApp_Chat", index=False)
+
+            # Set the filename and download button label
+            excel_filename = "whatsapp_chats.xlsx"
+            st.write(f"Exporting to {excel_filename}...")
+            
+            # Prepare the Excel data for download
+            excel_data = excel_buffer.getvalue()
+            st.download_button(label="Click here to download the Excel file", data=excel_data, file_name=excel_filename, key="excel_download")
 
 # Quick Stats
 st.title("Stats")
@@ -297,50 +268,61 @@ if selected_member:
 
 st.title('Visualizations')
 
-# Most Active Group Participants
-with st.expander('Most Active Group Participants'):
-    activity_count = df['member'].value_counts().reset_index()
-    activity_count.columns = ['Member', 'Activity Count']
-    activity_count = activity_count.sort_values(by='Activity Count', ascending=False)
+# Create a Streamlit expander for displaying the chart
+participant_counts = df['member'].value_counts()
+with st.expander("Most Active Participants", expanded=True):
+    # Create a Plotly bar chart
+    fig = px.bar(
+        x=participant_counts.index,
+        y=participant_counts.values,
+        labels={'x': 'Participant', 'y': 'Number of Messages'},
+        title='Most Active Participants',
+    )
 
-    fig = px.bar(activity_count.head(20), x='Member', y='Activity Count', title='Most Active Group Members')
-    fig.update_traces(marker_color='rgb(63, 72, 204)')
-    fig.update_layout(xaxis_title='Member', yaxis_title='Activity Count', xaxis_tickangle=-45, font=dict(size=14))
-    st.plotly_chart(fig, use_container_width=True)
+    # Customize the chart layout
+    fig.update_layout(
+        xaxis_title_font=dict(size=14),
+        yaxis_title_font=dict(size=14),
+        title_font=dict(size=16),
+        xaxis_tickangle=-45,
+    )
+
+    # Display the chart using Plotly
+    st.plotly_chart(fig)
 
 
-# Emoji dist
-# with st.expander('Emoji Distribution'):
-#     # Extract emojis from messages
-#     emoji_pattern = r'[\U0001F600-\U0001F650]'
-#     df['emojis'] = df['message'].str.findall(emoji_pattern)
+# Emoji dist: Extract all emojis used in the chat and count their occurrences
+# Calculate emoji frequencies
+total_emojis_list = list([a for b in df['emojis'] for a in b])
+emoji_dict = dict(collections.Counter(total_emojis_list))
+emoji_dict = sorted(emoji_dict.items(), key=lambda x: x[1], reverse=True)
+emoji_df = pd.DataFrame(emoji_dict, columns=['Emoji', 'Frequency'])
 
-#     # Flatten the list of emojis
-#     all_emojis = [emoji for emojis in df['emojis'] for emoji in emojis]
+# Create a list of just the emojis
+emojis_only = emoji_df['Emoji']
 
-#     # Count emoji frequencies
-#     emoji_counts = pd.Series(all_emojis).value_counts().reset_index()
-#     emoji_counts.columns = ['Emoji', 'Count']
+# Define custom colors for the pie chart
+colors = ['#ffd700', '#ff69b4', '#1e90ff', '#ff8c00', '#00ced1']
 
-#     # Define custom colors for the pie chart
-#     colors = ['#ffd700', '#ff69b4', '#1e90ff', '#ff8c00', '#00ced1']
-
-#     # Create a pie chart of the emoji frequencies with custom colors
-#     fig = px.pie(
-#         emoji_counts,
-#         names='Emoji',
-#         values='Count',
-#         title='Overall Emoji Distribution',
-#         color_discrete_sequence=colors
-#     )
-#     fig.update_traces(textposition='inside', textinfo='percent+label')
-#     fig.update_layout(width=800, height=500, showlegend=True)
-
-#     # Show the pie chart in Streamlit
-#     st.plotly_chart(fig, use_container_width=True)
+# Create a Streamlit expander for displaying the emoji distribution chart
+with st.expander("Emoji Distribution", expanded=True):
+    # Create a Plotly pie chart of emoji frequencies with custom colors
+    fig = px.pie(
+        emoji_df,
+        values='Frequency',
+        names=emojis_only,  # Use only the emojis as labels
+        title='Overall Emoji Distribution',
+        color_discrete_sequence=colors,
+    )
+    
+    # Customize the chart layout
+    fig.update_traces(textinfo='percent+label')  # Show percent labels only
+    fig.update_layout(width=800, height=500, showlegend=True)
+    
+    # Display the chart using Plotly
+    st.plotly_chart(fig)
 
 # Most commonly Used Words
-
 # Filter out messages that contain media files
 non_media = df[~df['message'].str.contains('<Media omitted>')]
 
