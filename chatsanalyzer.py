@@ -388,12 +388,7 @@ with st.expander('Most Active Dates'):
 # Most active times
 with st.expander('Most Active Times'):
     time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
-    
-    # Convert the 'time' column to datetime
-    time_counts['time'] = pd.to_datetime(time_counts['time']).dt.strftime('%I:%M %p')
-    
-    # Strip leading/trailing spaces
-    time_counts['time'] = time_counts['time'].str.strip()
+    time_counts['time'] = time_counts['time'].str.strip()  # Remove leading/trailing spaces
     
     fig = px.bar(time_counts, x='count', y='time', orientation='h', color='time',
                  title='Most Active Times of the Day')
