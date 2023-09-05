@@ -245,7 +245,7 @@ media_messages = df[df['message'] == '<Media omitted>'].shape[0]
 
 # Calculate emojis
 df["emoji"] = df["message"].apply(split_count)
-emojis = sum(df['emoji'].str.len())
+# emojis = sum(df['emoji'].str.len())
 
 # Calculate URL links
 URLPATTERN = r'(https?://\S+)'
@@ -255,7 +255,7 @@ links = np.sum(df.urlcount)
 # Display quick stats
 st.write(f"Total Messages: {total_messages}")
 st.write(f"Media Messages: {media_messages}")
-st.write(f"Total Emojis: {emojis}")
+# st.write(f"Total Emojis: {emojis}")
 st.write(f"Total Links: {links}")
 
 st.subheader("Member Stats")
@@ -386,15 +386,13 @@ with st.expander('Most Active Dates'):
     st.plotly_chart(fig)
     
 # Most active times
-with st.expander('Most Active Times'):
-    time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
-    time_counts['time'] = time_counts['time'].str.strip()  # Remove leading/trailing spaces
+# with st.expander('Most Active Times'):
+#     time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+#     fig = px.bar(time_counts, x='count', y='time', orientation='h', color='time',
+#                  title='Most Active Times of the Day')
+#     fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Time', showlegend=False)
     
-    fig = px.bar(time_counts, x='count', y='time', orientation='h', color='time',
-                 title='Most Active Times of the Day')
-    fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Time', showlegend=False)
-    
-    st.plotly_chart(fig)
+#     st.plotly_chart(fig)
     
 # Most active hour of the Day
 with st.expander('Most Active Hours of the Day'):
