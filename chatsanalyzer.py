@@ -175,6 +175,9 @@ if uploaded_file:
             'emojis': emojis
         })
         
+        # Filter out members with the name "System"
+        df = df[df['member'] != 'System']
+        
         st.markdown(
     f"""
     <style>
@@ -298,19 +301,26 @@ if selected_member:
 
 st.title('Visualizations')
 
-# the top 20 participants
+# Most Active Group Participants
 with st.expander('Most Active Group Participants'):
-    # Calculate activity count for each member
     activity_count = df['member'].value_counts().reset_index()
     activity_count.columns = ['Member', 'Activity Count']
+    activity_count = activity_count.sort_values(by='Activity Count', ascending=False)
 
-    # display the top 20 participants
-    st.plotly_chart(
-        px.bar(activity_count.head(20), x='Member', y='Activity Count', title='Most Active Group Members')
-        .update_traces(marker_color='rgb(63, 72, 204)')
-        .update_layout(xaxis_title='Member', yaxis_title='Activity Count', xaxis_tickangle=-45, font=dict(size=14)),
-        use_container_width=True
-    )
+    fig = px.bar(activity_count.head(20), x='Member', y='Activity Count', title='Most Active Group Members')
+    fig.update_traces(marker_color='rgb(63, 72, 204)')
+    fig.update_layout(xaxis_title='Member', yaxis_title='Activity Count', xaxis_tickangle=-45, font=dict(size=14))
+    st.plotly_chart(fig, use_container_width=True)
+    
+# Most Mentioned Members
+# Most Mentioned Members
+with st.expander('Most Mentioned Members'):
+    # Assuming you have a mentions column in your DataFrame
+    mentions_counts = df['mentions'].apply(lambda x: len(x)).value_counts().reset_index()
+    mentions_counts.columns = ['Mentions Count', 'Messages Count']
+    fig = px.bar(mentions_counts, x='Mentions Count', y='Messages Count', title='Most Mentioned Members')
+    st.plotly_chart(fig)
+
 
 # Emoji dist
 # with st.expander('Emoji Distribution'):
@@ -416,4 +426,21 @@ with st.expander('Most Active Days of the Week'):
     fig = px.bar(day_counts, x='count', y='weekday', orientation='h', color='weekday',
                  title='Most Active Days of the Week')
     fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Day of the Week', showlegend=False)
+    st.plotly_chart(fig)
+    
+# Visualize message count over time
+with st.expander('Message Count Over Time'):
+    message_count_over_time = df.groupby(['date']).size().reset_index(name='message_count')
+    fig = px.line(message_count_over_time, x='date', y='message_count', title='Message Count Over Time')
+    st.plotly_chart(fig)
+    
+# Visualize message length distribution
+with st.expander('Message Length Distribution'):
+    fig = px.histogram(df, x='message_length', title='Message Length Distribution')
+    st.plotly_chart(fig)
+    
+# Member Activity Over Time
+with st.expander('Member Activity Over Time'):
+    member_activity_over_time = df.groupby(['date', 'member']).size().reset_index(name='message_count')
+    fig = px.line(member_activity_over_time, x='date', y='message_count', color='member', title='Member Activity Over Time')
     st.plotly_chart(fig)
