@@ -55,10 +55,10 @@ Hey there! Ever wondered what's really going on in your WhatsApp chats? Introduc
 """)
 
 # Display a GIF video with a caption and custom dimensions
-st.subheader("Demo Video")
-video_url = "demo.mp4" 
-video_width = 600  # Adjust the width as needed
-st.video(video_url)
+st.caption("Demo on how to export WhatsApp chats to Text File")
+video_url = "demo.gif" 
+video_width = 1200 
+st.image(video_url, width=video_width)
 
 # Function to remove emojis from a string
 def remove_emojis(text):
