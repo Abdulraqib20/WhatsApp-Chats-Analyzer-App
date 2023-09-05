@@ -389,6 +389,9 @@ with st.expander('Most Active Dates'):
 with st.expander('Most Active Times'):
     time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
     
+    # Debugging: Print the columns of time_counts
+    print(time_counts.columns)
+    
     # Convert the 'time' column to string
     time_counts['time'] = time_counts['time'].astype(str)
     
