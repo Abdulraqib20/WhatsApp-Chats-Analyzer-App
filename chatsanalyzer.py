@@ -43,6 +43,11 @@ st.markdown(
 )
 st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
 
+# # Add the subheading and image in a container
+# with st.container():
+#     st.subheader("WhatsApp Chats Analyzer")
+#     st.image("wa1.jpg")
+
 
 # Add an introductory paragraph
 st.markdown("""
@@ -52,7 +57,8 @@ This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoug
 # Display a GIF image with a caption and custom dimensions
 st.caption("Demo on how to export WhatsApp chats to Text File")
 video_url = "demo.gif" 
-st.image(video_url, width=1000)
+video_width = 1000 
+st.image(video_url, width=video_width)
 
 # Function to remove emojis from a string
 def remove_emojis(text):
