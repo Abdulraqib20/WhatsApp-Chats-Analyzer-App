@@ -51,7 +51,7 @@ st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
 
 # Add an introductory paragraph
 st.markdown("""
-Hey there! Ever wondered what's really going on in your WhatsApp chats? Introducing the WhatsApp Chats Analyzer, brought to you by Raqib (aka raqibcodes)! This nifty tool takes your WhatsApp chat and works its magic, revealing all sorts of cool stuff. Check out message stats, member interactions, and even the vibe with sentiment analysis. It's like a chat detective! Just upload your chatand have fun with it!
+This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib, known as raqibcodes. This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
 """)
 
 # Display a GIF video with a caption and custom dimensions
