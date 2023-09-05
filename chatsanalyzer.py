@@ -388,6 +388,10 @@ with st.expander('Most Active Dates'):
 # Most active times
 with st.expander('Most Active Times'):
     time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+    
+    # Convert the 'time' column to string
+    time_counts['time'] = time_counts['time'].astype(str)
+    
     fig = px.bar(time_counts, x='count', y='time', orientation='h', color='time',
                  title='Most Active Times of the Day')
     fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Time', showlegend=False)
