@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import plotly.graph_objects as go
 
 import re
 from collections import Counter
@@ -43,11 +44,6 @@ st.markdown(
 )
 st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
 
-# # Add the subheading and image in a container
-# with st.container():
-#     st.subheader("WhatsApp Chats Analyzer")
-#     st.image("wa1.jpg")
-
 
 # Add an introductory paragraph
 st.markdown("""
@@ -57,7 +53,7 @@ This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoug
 # Display a GIF image with a caption and custom dimensions
 st.caption("Demo on how to export WhatsApp chats to Text File")
 video_url = "demo.gif" 
-st.image(video_url)
+st.image(video_url, width=1200)
 
 def date_time(s):
     pattern = r'^\d{1,2}/\d{1,2}/\d{2}, \d{1,2}:\d{2}'
@@ -116,8 +112,6 @@ if uploaded_file:
         # df['member'] = df['member'].apply(lambda x: re.escape(x))
         # df['message'] = df['message'].str.replace(f"{df['member']}: ", "", regex=True)
         
-        # Function to remove member names from messages
-        # Function to remove member names from messages
         # Function to remove member names from messages
         def remove_member_names(df):
             for index, row in df.iterrows():
@@ -268,27 +262,60 @@ if selected_member:
 
 st.title('Visualizations')
 
-# Create a Streamlit expander for displaying the chart
+# Most Active participants
 participant_counts = df['member'].value_counts()
+# with st.expander("Most Active Participants", expanded=True):
+#     # Create a Plotly bar chart
+#     fig = px.bar(
+#         x=participant_counts.index,
+#         y=participant_counts.values,
+#         labels={'x': 'Participant', 'y': 'Number of Messages'},
+#         title='Most Active Participants',
+#     )
+
+#     # Customize the chart layout
+#     fig.update_layout(
+#         xaxis_title_font=dict(size=14),
+#         yaxis_title_font=dict(size=14),
+#         title_font=dict(size=16),
+#         xaxis_tickangle=-45,
+#     )
+
+#     # Display the chart using Plotly
+#     st.plotly_chart(fig)
+
+# Create an expander for display options
+# Count the number of messages per member
+message_counts = df['member'].value_counts().reset_index()
+message_counts.columns = ['member', 'message count']
+
+# Create an expander for display options
 with st.expander("Most Active Participants", expanded=True):
-    # Create a Plotly bar chart
-    fig = px.bar(
-        x=participant_counts.index,
-        y=participant_counts.values,
-        labels={'x': 'Participant', 'y': 'Number of Messages'},
-        title='Most Active Participants',
-    )
+    show_all_participants = st.checkbox("Show All Participants", value=True)
+    
+    if not show_all_participants:
+        max_participants = st.slider("Max Participants to Show", min_value=1, max_value=len(message_counts), value=len(message_counts))
+        message_counts = message_counts.head(max_participants)
 
-    # Customize the chart layout
-    fig.update_layout(
-        xaxis_title_font=dict(size=14),
-        yaxis_title_font=dict(size=14),
-        title_font=dict(size=16),
-        xaxis_tickangle=-45,
-    )
+# Create a Plotly bar chart
+fig = px.bar(
+    message_counts,
+    x='member',
+    y='message count',
+    title='Most Active Participants by Message Count',
+    labels={'member': 'Participant', 'message count': 'Number of Messages'},
+)
 
-    # Display the chart using Plotly
-    st.plotly_chart(fig)
+# Customize the chart layout
+fig.update_layout(
+    xaxis_title_font=dict(size=14),
+    yaxis_title_font=dict(size=14),
+    title_font=dict(size=16),
+    xaxis_tickangle=-45,
+)
+
+# Display the chart using Plotly
+st.plotly_chart(fig)
 
 
 # Emoji dist: Extract all emojis used in the chat and count their occurrences
@@ -365,11 +392,19 @@ with st.expander('Most Active Dates'):
     fig.update_traces(marker_color='rgb(63, 72, 204)') 
     fig.update_xaxes(categoryorder='total descending')
     st.plotly_chart(fig)
+    
+# Most active times
+# with st.expander('Most Active Times'):
+#     time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+#     fig = px.bar(time_counts, x='count', y='time', orientation='h', color='time',
+#                  title='Most Active Times of the Day')
+#     fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Time', showlegend=False)
+    
+#     st.plotly_chart(fig)
 
 # Most active times
 with st.expander("Most Active Time", expanded=True):
-    # Ensure the 'time' column is in datetime format if it's not already
-    time_counts['time'] = pd.to_datetime(time_counts['time'], format='%I:%M %p')
+    time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
     
     # Create the bar chart
     fig = px.bar(
@@ -389,7 +424,6 @@ with st.expander("Most Active Time", expanded=True):
 
     # Display the chart using Plotly
     st.plotly_chart(fig)
-
     
 # Most active hour of the Day
 with st.expander('Most Active Hours of the Day'):
