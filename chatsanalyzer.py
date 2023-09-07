@@ -445,7 +445,7 @@ with st.expander('Most Active Dates'):
 # Most active times
 time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
 with st.expander("Most Active Time", expanded=True):
-    # time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+    st.write("Debug: time_counts DataFrame", time_counts)  # Add this line for debugging
     
     # Create the bar chart
     fig = px.bar(
