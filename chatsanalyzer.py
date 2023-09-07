@@ -422,7 +422,6 @@ with st.expander('Word Cloud of Messages'):
     st.plotly_chart(fig)
     
 # Most Active Dates
-df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y').dt.date
 
 with st.expander('Most Active Dates'):
     activity_by_date = df['date'].value_counts().reset_index()
@@ -443,7 +442,6 @@ with st.expander('Most Active Dates'):
 #     st.plotly_chart(fig)
     
 # Most active Days of the Week
-df['date'] = pd.to_datetime(df['date'])
 # with st.expander('Most Active Days of the Week'):
 #     df['weekday'] = df['date'].dt.day_name()
 #     day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'messages'})
@@ -459,22 +457,29 @@ df['date'] = pd.to_datetime(df['date'])
 with st.expander('Most Active Days of the Week'):
     df['weekday'] = df['date'].dt.day_name()
     day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'messages'})
-    days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
-    day_counts = day_counts.sort_values('weekday')
 
-    # Create an Altair bar chart
-    chart = alt.Chart(day_counts).mark_bar().encode(
-        x='messages:Q',
-        y=alt.Y('weekday:N', sort=days_order),
-        color=alt.Color('weekday:N', legend=None)
-    ).properties(
-        title='Most Active Days of the Week'
-    ).configure_axis(
-        titleFontSize=14,
-        labelFontSize=12
-    )
-    st.altair_chart(chart, use_container_width=True)
+    # Ensure 'weekday' column exists before setting category order
+    if 'weekday' in day_counts:
+        days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
+        day_counts = day_counts.sort_values('weekday')
+
+        # Create an Altair bar chart
+        chart = alt.Chart(day_counts).mark_bar().encode(
+            x='messages:Q',
+            y=alt.Y('weekday:N', sort=days_order),
+            color=alt.Color('weekday:N', legend=None)
+        ).properties(
+            title='Most Active Days of the Week'
+        ).configure_axis(
+            titleFontSize=14,
+            labelFontSize=12
+        )
+
+        # Display the chart using Altair
+        st.altair_chart(chart, use_container_width=True)
+    else:
+        st.warning("No data available for Most Active Days of the Week.")
     
 # Messages Sent Per Month
 with st.expander('Messages Sent Per Month'):
