@@ -3,7 +3,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
 
 import re
 from collections import Counter
@@ -106,7 +105,6 @@ if uploaded_file:
         df['reaction_count'] = df['message'].apply(lambda x: len(re.findall(r'👍|❤️|😂|😢|😮|😡|🎉|👏', x)))
         df['word_count'] = df['message'].apply(lambda x: len(re.findall(r'\b\w+\b', x)))
         df['mentions'] = df['message'].apply(lambda x: ", ".join(re.findall(r'@(\w+)', x)))
-        df['emojis'] = df['message'].apply(lambda x: ", ".join(re.findall(r'[^\w\s,]', x)))
         # df['message'] = df.apply(lambda row: row['message'].replace(f"{row['member']}: ", ""), axis=1)
         # df['message'] = df['message'].str.replace(f"{df['member']}: ", "", regex=True)
         # df['member'] = df['member'].apply(lambda x: re.escape(x))
@@ -123,6 +121,12 @@ if uploaded_file:
 
         # Apply the function to remove member names
         df = remove_member_names(df)
+        
+        # get emojis
+        def extract_emojis(message):
+            return [emoji.emojize(c) for c in message if emoji.is_emoji(c)]
+
+        df['emojis'] = df['message'].apply(extract_emojis)
 
         # Remove non-breaking space from the "time" column
         # df['time'] = df['time'].str.replace('\u202F', ' ')
@@ -186,6 +190,31 @@ if uploaded_file:
             excel_data = excel_buffer.getvalue()
             st.download_button(label="Click here to download the Excel file", data=excel_data, file_name=excel_filename, key="excel_download")
 
+st.markdown("<br>", unsafe_allow_html=True) # line spacing
+# keyword search
+st.subheader("Keyword Search")
+
+# Create a text input widget for users to enter keywords
+search_keyword = st.text_input("Enter Keyword")
+
+# Create a button with custom CSS
+search_button = st.button("Search", key="search_button")
+
+# Filter the DataFrame based on the entered keyword when the button is clicked
+if search_button:
+    if search_keyword:
+        filtered_df = df[df['message'].str.contains(search_keyword, case=False, na=False)]
+
+        # Display the filtered results in a table
+        if not filtered_df.empty:
+            st.write("Search Results:")
+            st.dataframe(filtered_df)
+        else:
+            st.warning("No matching messages found.")
+    else:
+        st.warning("Please enter a keyword to search.")            
+
+st.markdown("<br>", unsafe_allow_html=True) # line spacing
 # Quick Stats
 st.title("Stats")
 
@@ -203,6 +232,8 @@ def split_count(text):
 
 # Calculate total messages
 total_messages = df.shape[0]
+# avg messages
+avg_message_length = df['message_length'].mean()
 
 # Calculate media messages
 media_messages = df[df['message'] == '<Media omitted>'].shape[0]
@@ -218,6 +249,7 @@ links = np.sum(df.urlcount)
 
 # Display quick stats
 st.write(f"Total Messages: {total_messages}")
+st.write(f'Average message length: {avg_message_length}')
 st.write(f"Media Messages: {media_messages}")
 st.write(f"Total Emojis: {emojis}")
 st.write(f"Total Links: {links}")
@@ -319,31 +351,34 @@ st.plotly_chart(fig)
 
 
 # Emoji dist: Extract all emojis used in the chat and count their occurrences
+
 # Calculate emoji frequencies
 total_emojis_list = list([a for b in df['emojis'] for a in b])
 emoji_dict = dict(collections.Counter(total_emojis_list))
 emoji_dict = sorted(emoji_dict.items(), key=lambda x: x[1], reverse=True)
 emoji_df = pd.DataFrame(emoji_dict, columns=['Emoji', 'Frequency'])
+emoji_df = emoji_df.head(40)
 
 # Create a list of just the emojis
 emojis_only = emoji_df['Emoji']
 
-# Define custom colors for the pie chart
+# Define custom colors for the bar chart
 colors = ['#ffd700', '#ff69b4', '#1e90ff', '#ff8c00', '#00ced1']
 
 # Create a Streamlit expander for displaying the emoji distribution chart
 with st.expander("Emoji Distribution", expanded=True):
-    # Create a Plotly pie chart of emoji frequencies with custom colors
-    fig = px.pie(
+    # Create a Plotly bar chart of emoji frequencies with custom colors
+    fig = px.bar(
         emoji_df,
-        values='Frequency',
-        names=emojis_only,  # Use only the emojis as labels
+        x='Frequency',
+        y=emojis_only,  
+        orientation='h',  
         title='Overall Emoji Distribution',
+        color=emojis_only, 
         color_discrete_sequence=colors,
     )
     
     # Customize the chart layout
-    fig.update_traces(textinfo='percent+label')  # Show percent labels only
     fig.update_layout(width=800, height=500, showlegend=True)
     
     # Display the chart using Plotly
