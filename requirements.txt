@@ -15,4 +15,5 @@ wordcloud==1.8.2.2
 Pillow==9.3.0
 emoji==2.1.0
 XlsxWriter==3.1.2
+altair==4.2.0
 
