@@ -442,8 +442,9 @@ with st.expander('Most Active Dates'):
 #     st.plotly_chart(fig)
 
 # Most active times
+time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
 with st.expander("Most Active Time", expanded=True):
-    time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+    # time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
     
     # Create the bar chart
     fig = px.bar(
