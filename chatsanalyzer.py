@@ -431,6 +431,34 @@ with st.expander('Most Active Dates'):
     fig.update_traces(marker_color='rgb(63, 72, 204)') 
     fig.update_xaxes(categoryorder='total descending')
     st.plotly_chart(fig)
+
+# Most active times
+
+with st.expander("Most Active Times", expanded=True):
+    fig = px.line(
+        df['time'].value_counts().head(20).reset_index(),
+        x='index',  # Time values
+        y='time',   # Message counts
+        labels={'index': 'Time of Day', 'time': 'Number of Messages'},
+        title='Most Active Times',
+    )
+
+    fig.update_xaxes(title_text='Time of Day')
+    fig.update_yaxes(title_text='Number of Messages')
+    fig.update_layout(width=850, height=550)
+    st.plotly_chart(fig)
+    
+# Most active hour of the Day
+
+with st.expander('Most Active Hours of the Day'):
+    df['hour'] = df['time'].str.split(':', expand=True)[0]
+    time_counts = df['hour'].value_counts().reset_index().rename(columns={'index': 'hour', 'hour': 'number of messages'})
+    time_counts = time_counts.sort_values(by='hour')
+    
+    fig = px.bar(time_counts, x='hour', y='number of messages', color='hour',
+                 title='Most Active Times (Hourly)')
+    fig.update_layout(xaxis_title='Hour of the Day', yaxis_title='Number of Messages', showlegend=False)
+    st.plotly_chart(fig)
     
 # Most active times
 # with st.expander('Most Active Times'):
@@ -440,19 +468,20 @@ with st.expander('Most Active Dates'):
 #     fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Time', showlegend=False)
     
 #     st.plotly_chart(fig)
+
     
 # Most active Days of the Week
-# with st.expander('Most Active Days of the Week'):
-#     df['weekday'] = df['date'].dt.day_name()
-#     day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'messages'})
-#     days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-#     day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
-#     day_counts = day_counts.sort_values('weekday')
+with st.expander('Most Active Days of the Week'):
+    df['weekday'] = df['date'].dt.day_name()
+    day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'messages'})
+    days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
+    day_counts = day_counts.sort_values('weekday')
 
-#     fig = px.bar(day_counts, x='messages', y='weekday', orientation='h', color='weekday',
-#                  title='Most Active Days of the Week')
-#     fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Day of the Week', showlegend=False)
-#     st.plotly_chart(fig)
+    fig = px.bar(day_counts, x='messages', y='weekday', orientation='h', color='weekday',
+                 title='Most Active Days of the Week')
+    fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Day of the Week', showlegend=False)
+    st.plotly_chart(fig)
 
 with st.expander('Most Active Days of the Week'):
     df['weekday'] = pd.to_datetime(df['date']).dt.day_name()
