@@ -298,9 +298,6 @@ if selected_member:
     st.write(f"Links Sent: {links_sent}")
 
 st.title('Visualizations')
-# Most active times
-time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
-st.write(f"Debug: time_counts DataFrame: {time_counts}")
 
 # Most Active participants
 participant_counts = df['member'].value_counts()
@@ -446,24 +443,24 @@ with st.expander('Most Active Dates'):
 #     st.plotly_chart(fig)
 
 
-with st.expander("Most Active Time", expanded=True):
-    time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
-    
-    # Create the bar chart
-    fig = px.bar(
-        time_counts,
-        x='count',
-        y='time',
-        orientation='h',
-        color='time',
-        labels={'time': 'Time', 'count': 'Message Count'},
-        title='Most Active Time of the Day',
+# Most active times
+time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+
+with st.expander("Most Active Time (Heatmap)", expanded=True):
+    # Create a heatmap
+    fig = px.imshow(
+        time_counts[['count']],
+        labels=dict(x="Time of Day", y=""),
+        x=time_counts['time'],
+        y=[0],  # Use a single row (y=[0]) for a horizontal heatmap
+        color_continuous_scale="Viridis",  # Choose a color scale
+        title='Most Active Time of the Day (Heatmap)',
+        aspect="auto",  # Adjust the aspect ratio
     )
 
     # Customize the chart layout
-    fig.update_xaxes(title_text='Message Count')
-    fig.update_yaxes(title_text='Time of Day')
-    fig.update_layout(width=800, height=500, showlegend=False)
+    fig.update_xaxes(title_text='Time of Day')
+    fig.update_layout(width=800, height=300)
 
     # Display the chart using Plotly
     st.plotly_chart(fig)
