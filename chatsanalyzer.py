@@ -23,6 +23,7 @@ from nltk.probability import FreqDist
 import warnings
 warnings.simplefilter(action='ignore', category=UserWarning)
 
+st.set_option('deprecation.showfileUploaderEncoding', False)
 
 # Create a Streamlit app
 st.set_page_config(
