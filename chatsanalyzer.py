@@ -72,6 +72,7 @@ def data_point(line):
 # Create a file upload widget
 uploaded_file = st.file_uploader("Upload your WhatsApp chat .txt file", type=["txt"])
 
+
 # Check if a file was uploaded
 if uploaded_file:
     st.success("File successfully uploaded.")
@@ -189,6 +190,9 @@ if uploaded_file:
             # Prepare the Excel data for download
             excel_data = excel_buffer.getvalue()
             st.download_button(label="Click here to download the Excel file", data=excel_data, file_name=excel_filename, key="excel_download")
+            
+else:
+    st.warning("Please upload a WhatsApp chat .txt file.")
 
 st.markdown("<br>", unsafe_allow_html=True) # line spacing
 # keyword search
