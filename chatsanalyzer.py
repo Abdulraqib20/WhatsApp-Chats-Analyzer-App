@@ -312,21 +312,21 @@ with st.expander("Most Active Participants", expanded=True):
         max_participants = st.slider("Max Participants to Show", min_value=1, max_value=len(message_counts), value=len(message_counts))
         message_counts = message_counts.head(max_participants)
 
-# Create an Altair bar chart
-chart = alt.Chart(message_counts).mark_bar().encode(
-    x=alt.X('member:N', title='Participant', sort='-y'), 
-    y=alt.Y('message count:Q', title='Number of Messages'),
-    color=alt.Color('member:N', legend=None),
-    tooltip=['member:N', 'message count:Q']
-).properties(
-    width=800,
-    height=550,
-    title='Most Active Participants by Message Count'
-).configure_axisX(
-    labelAngle=-45
-)
-
-st.altair_chart(chart, use_container_width=True)
+    # Create an Altair bar chart
+    chart = alt.Chart(message_counts).mark_bar().encode(
+        x=alt.X('member:N', title='Participant', sort='-y'), 
+        y=alt.Y('message count:Q', title='Number of Messages'),
+        color=alt.Color('member:N', legend=None),
+        tooltip=['member:N', 'message count:Q']
+    ).properties(
+        width=800,
+        height=550,
+        title='Most Active Participants by Message Count'
+    ).configure_axisX(
+        labelAngle=-45
+    )
+    
+    st.altair_chart(chart, use_container_width=True)
 
 
 # Emoji dist: Extract all emojis used in the chat and count their occurrences
