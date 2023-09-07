@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import altair as alt
 
 import re
 from collections import Counter
@@ -443,6 +444,18 @@ with st.expander('Most Active Dates'):
     
 # Most active Days of the Week
 df['date'] = pd.to_datetime(df['date'])
+# with st.expander('Most Active Days of the Week'):
+#     df['weekday'] = df['date'].dt.day_name()
+#     day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'messages'})
+#     days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+#     day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
+#     day_counts = day_counts.sort_values('weekday')
+
+#     fig = px.bar(day_counts, x='messages', y='weekday', orientation='h', color='weekday',
+#                  title='Most Active Days of the Week')
+#     fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Day of the Week', showlegend=False)
+#     st.plotly_chart(fig)
+
 with st.expander('Most Active Days of the Week'):
     df['weekday'] = df['date'].dt.day_name()
     day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'messages'})
@@ -450,10 +463,18 @@ with st.expander('Most Active Days of the Week'):
     day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
     day_counts = day_counts.sort_values('weekday')
 
-    fig = px.bar(day_counts, x='messages', y='weekday', orientation='h', color='weekday',
-                 title='Most Active Days of the Week')
-    fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Day of the Week', showlegend=False)
-    st.plotly_chart(fig)
+    # Create an Altair bar chart
+    chart = alt.Chart(day_counts).mark_bar().encode(
+        x='messages:Q',
+        y=alt.Y('weekday:N', sort=days_order),
+        color=alt.Color('weekday:N', legend=None)
+    ).properties(
+        title='Most Active Days of the Week'
+    ).configure_axis(
+        titleFontSize=14,
+        labelFontSize=12
+    )
+    st.altair_chart(chart, use_container_width=True)
     
 # Messages Sent Per Month
 with st.expander('Messages Sent Per Month'):
