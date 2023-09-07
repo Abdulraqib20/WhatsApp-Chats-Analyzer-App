@@ -539,32 +539,6 @@ with st.expander('Member Activity Over Time'):
     member_activity_over_time = df.groupby(['date', 'member']).size().reset_index(name='messages')
     fig = px.line(member_activity_over_time, x='date', y='messages', color='member', title='Member Activity Over Time')
     st.plotly_chart(fig)
-    
-# Most active times
-with st.expander("Most Active Times", expanded=True):
-    fig = px.line(
-        df['time'].value_counts().head(20).reset_index(),
-        x='index',  # Time values
-        y='time',   # Message counts
-        labels={'index': 'Time of Day', 'time': 'Number of Messages'},
-        title='Most Active Times',
-    )
-
-    fig.update_xaxes(title_text='Time of Day')
-    fig.update_yaxes(title_text='Number of Messages')
-    fig.update_layout(width=850, height=550)
-    st.plotly_chart(fig)
-    
-# Most active hour of the Day
-with st.expander('Most Active Hours of the Day'):
-    df['hour'] = df['time'].str.split(':', expand=True)[0]
-    time_counts = df['hour'].value_counts().reset_index().rename(columns={'index': 'hour', 'hour': 'number of messages'})
-    time_counts = time_counts.sort_values(by='hour')
-    
-    fig = px.bar(time_counts, x='hour', y='number of messages', color='hour',
-                 title='Most Active Times (Hourly)')
-    fig.update_layout(xaxis_title='Hour of the Day', yaxis_title='Number of Messages', showlegend=False)
-    st.plotly_chart(fig)
 
     
 # footer
