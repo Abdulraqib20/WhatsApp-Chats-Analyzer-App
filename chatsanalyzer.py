@@ -298,6 +298,9 @@ if selected_member:
     st.write(f"Links Sent: {links_sent}")
 
 st.title('Visualizations')
+# Most active times
+time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+st.write(f"Debug: time_counts DataFrame: {time_counts}")
 
 # Most Active participants
 participant_counts = df['member'].value_counts()
@@ -442,14 +445,10 @@ with st.expander('Most Active Dates'):
     
 #     st.plotly_chart(fig)
 
-# Most active times
-time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
-st.write("Debug: time_counts DataFrame", time_counts)
 
 with st.expander("Most Active Time", expanded=True):
-    # Print the time_counts DataFrame for debugging
-    st.write("Debug: time_counts DataFrame", time_counts)
-
+    time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+    
     # Create the bar chart
     fig = px.bar(
         time_counts,
