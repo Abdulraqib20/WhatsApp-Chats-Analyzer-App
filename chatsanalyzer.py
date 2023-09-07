@@ -298,35 +298,13 @@ if selected_member:
     st.write(f"Links Sent: {links_sent}")
 
 st.title('Visualizations')
-
 # Most Active participants
+
 participant_counts = df['member'].value_counts()
-# with st.expander("Most Active Participants", expanded=True):
-#     # Create a Plotly bar chart
-#     fig = px.bar(
-#         x=participant_counts.index,
-#         y=participant_counts.values,
-#         labels={'x': 'Participant', 'y': 'Number of Messages'},
-#         title='Most Active Participants',
-#     )
-
-#     # Customize the chart layout
-#     fig.update_layout(
-#         xaxis_title_font=dict(size=14),
-#         yaxis_title_font=dict(size=14),
-#         title_font=dict(size=16),
-#         xaxis_tickangle=-45,
-#     )
-
-#     # Display the chart using Plotly
-#     st.plotly_chart(fig)
-
-# Create an expander for display options
 # Count the number of messages per member
 message_counts = df['member'].value_counts().reset_index()
 message_counts.columns = ['member', 'message count']
 
-# Create an expander for display options
 with st.expander("Most Active Participants", expanded=True):
     show_all_participants = st.checkbox("Show All Participants", value=True)
     
@@ -334,25 +312,21 @@ with st.expander("Most Active Participants", expanded=True):
         max_participants = st.slider("Max Participants to Show", min_value=1, max_value=len(message_counts), value=len(message_counts))
         message_counts = message_counts.head(max_participants)
 
-# Create a Plotly bar chart
-fig = px.bar(
-    message_counts,
-    x='member',
-    y='message count',
-    title='Most Active Participants by Message Count',
-    labels={'member': 'Participant', 'message count': 'Number of Messages'},
+# Create an Altair bar chart
+chart = alt.Chart(message_counts).mark_bar().encode(
+    x=alt.X('member:N', title='Participant', sort='-y'), 
+    y=alt.Y('message count:Q', title='Number of Messages'),
+    color=alt.Color('member:N', legend=None),
+    tooltip=['member:N', 'message count:Q']
+).properties(
+    width=800,
+    height=550,
+    title='Most Active Participants by Message Count'
+).configure_axisX(
+    labelAngle=-45
 )
 
-# Customize the chart layout
-fig.update_layout(
-    xaxis_title_font=dict(size=14),
-    yaxis_title_font=dict(size=14),
-    title_font=dict(size=16),
-    xaxis_tickangle=-45,
-)
-
-# Display the chart using Plotly
-st.plotly_chart(fig)
+st.altair_chart(chart, use_container_width=True)
 
 
 # Emoji dist: Extract all emojis used in the chat and count their occurrences
