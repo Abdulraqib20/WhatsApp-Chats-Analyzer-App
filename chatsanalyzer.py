@@ -444,9 +444,12 @@ with st.expander('Most Active Dates'):
 
 # Most active times
 time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
+st.write("Debug: time_counts DataFrame", time_counts)
+
 with st.expander("Most Active Time", expanded=True):
-    st.write("Debug: time_counts DataFrame", time_counts)  # Add this line for debugging
-    
+    # Print the time_counts DataFrame for debugging
+    st.write("Debug: time_counts DataFrame", time_counts)
+
     # Create the bar chart
     fig = px.bar(
         time_counts,
@@ -465,6 +468,7 @@ with st.expander("Most Active Time", expanded=True):
 
     # Display the chart using Plotly
     st.plotly_chart(fig)
+
     
 # Most active hour of the Day
 with st.expander('Most Active Hours of the Day'):
