@@ -455,10 +455,9 @@ with st.expander('Most Active Dates'):
 #     st.plotly_chart(fig)
 
 with st.expander('Most Active Days of the Week'):
-    df['weekday'] = df['date'].dt.day_name()
+    df['weekday'] = pd.to_datetime(df['date']).dt.day_name()
     day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'messages'})
-
-    # Ensure 'weekday' column exists before setting category order
+    
     if 'weekday' in day_counts:
         days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
@@ -475,8 +474,7 @@ with st.expander('Most Active Days of the Week'):
             titleFontSize=14,
             labelFontSize=12
         )
-
-        # Display the chart using Altair
+        
         st.altair_chart(chart, use_container_width=True)
     else:
         st.warning("No data available for Most Active Days of the Week.")
