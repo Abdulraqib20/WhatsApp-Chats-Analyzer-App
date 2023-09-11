@@ -531,4 +531,4 @@ try:
         unsafe_allow_html=True
     )
 except NameError:
-    st.error("File has not been uploaded, kindly upload to get the analysis and plottings")
+    st.error("Unable to load the Stats. Please Upload a WhatsApp Chats .txt file.")
