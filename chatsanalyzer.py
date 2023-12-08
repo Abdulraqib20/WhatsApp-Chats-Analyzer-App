@@ -325,13 +325,16 @@ try:
     #     st.altair_chart(chart, use_container_width=True)
 
     with st.expander("Participants Overview", expanded=True):
-        option = st.radio("Select Participants", ["Top", "Bottom"])
-        num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
-        #num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
-        if option == "Top":
-            message_counts = message_counts.nlargest(num_participants, 'message count')
-        elif option == "Bottom":
-            message_counts = message_counts.nsmallest(num_participants, 'message count')
+        show_all_participants = st.checkbox("Show All Participants", value=True)
+    
+        if not show_all_participants:
+            option = st.radio("Select Participants", ["Top", "Bottom"])
+            num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
+    
+            if option == "Top":
+                message_counts = message_counts.nlargest(num_participants, 'message count')
+            elif option == "Bottom":
+                message_counts = message_counts.nsmallest(num_participants, 'message count')
     
         # Create an Altair bar chart
         chart = alt.Chart(message_counts).mark_bar().encode(
@@ -342,9 +345,8 @@ try:
         ).properties(
             width=800,
             height=550,
-            title=f'Most Active Participants by Number of Messages ({option} {num_participants})'
+            title=f'Most Active Participants by Message Count'
         ).configure_axis(
-            # labelAngle=-45,
             grid=False  # Hide gridlines
         )
     
@@ -413,15 +415,15 @@ try:
         elif option == "Bottom":
             top_words = word_counter.most_common()[-num_words:]
     
-        words_df = pd.DataFrame(top_words, columns=['Word', 'Count'])
+        words_df = pd.DataFrame(top_words, columns=['Word', 'Frequency'])
     
         # Create a bar chart using Plotly Express
         fig = px.bar(
             words_df,
-            x='Word',
-            y='Count',
+            y='Word',
+            x='Frequency',
             title=f'{option} {num_words} Used Words Chart',
-            labels={'Word': 'Word', 'Count': 'Count'},
+            labels={'Word': 'Word', 'Frequency': 'Frequency'},
         )
     
         # Customize the chart layout
@@ -432,6 +434,7 @@ try:
 
 
     # Word CLoud
+    
     with st.expander('Word Cloud of Messages'):
         all_messages = ' '.join(non_media['message'].astype(str).tolist())
         all_words = all_messages.split()
@@ -440,24 +443,23 @@ try:
         # Create a WordCloud
         wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_messages)
     
-        # Convert WordCloud to a DataFrame
-        wordcloud_df = pd.DataFrame(word_freq.items(), columns=['Word', 'Frequency'])
+        # Convert WordCloud to an image
+        image_array = wordcloud.to_array()
     
-        # Create a Word Cloud using Plotly Express
-        fig = px.bar(wordcloud_df, x='Word', y='Frequency', text='Word', color='Frequency',
-                     labels={'Word': 'Word', 'Frequency': 'Frequency'},
-                     title='Word Cloud',
-                     color_continuous_scale='Viridis')
+        # Create a custom color scale
+        colorscale = px.colors.sequential.Viridis
     
-        # Customize the chart layout
-        fig.update_traces(textposition='inside', textfont_size=10)
+        # Create a Plotly Express image chart
+        fig = px.imshow(image_array, color_continuous_scale=colorscale)
         fig.update_layout(
+            title_text="Word Cloud",
             xaxis=dict(showticklabels=False),
             yaxis=dict(showticklabels=False),
-            showlegend=False
+            coloraxis_showscale=False,
+            margin=dict(l=0, r=0, b=0, t=40)
         )
     
-        # Display the WordCloud using Plotly
+        # Display the Word Cloud using Plotly Express
         st.plotly_chart(fig)
 
     # Most Active Dates
