@@ -387,7 +387,8 @@ try:
             height=500,
             title='Emoji Distribution Chart'
         ).configure_axis(
-            labelAngle=-45
+            # labelAngle=-45,
+            grid=False  # Hide gridlines
         )
     
         # Display the chart using Altair
@@ -398,17 +399,38 @@ try:
     # Filter out messages that contain media files
     non_media = df[~df['message'].str.contains('<Media omitted>')]
 
-    with st.expander('Most Used Words'):
+    with st.expander('Most Used Words', expanded=True):
+        # Filter out messages that contain media files
+        non_media = df[~df['message'].str.contains('<Media omitted>')]
+    
+        option = st.radio("Select Words", ["Top", "Bottom"])
+        num_words = st.number_input(f"{option} N Words", min_value=1, value=10)
+    
+        # Calculate word frequencies
         all_messages = ' '.join(non_media['message'].astype(str).tolist())
         all_words = all_messages.split()
-        word_freq = collections.Counter(all_words)
-        top_words = word_freq.most_common(20)
-        words = [word[0] for word in top_words]
-        counts = [count[1] for count in top_words]
-
-        fig = px.bar(pd.DataFrame({'Word': words, 'Count': counts}), x='Word', y='Count')
-        fig.update_xaxes(tickangle=0) 
-
+        word_counter = collections.Counter(all_words)
+    
+        if option == "Top":
+            top_words = word_counter.most_common(num_words)
+        elif option == "Bottom":
+            top_words = word_counter.most_common()[-num_words:]
+    
+        words_df = pd.DataFrame(top_words, columns=['Word', 'Count'])
+    
+        # Create a bar chart using Plotly Express
+        fig = px.bar(
+            words_df,
+            x='Word',
+            y='Count',
+            title=f'{option} {num_words} Used Words Chart',
+            labels={'Word': 'Word', 'Count': 'Count'},
+        )
+    
+        # Customize the chart layout
+        fig.update_layout(width=800, height=500)
+    
+        # Display the chart using Plotly
         st.plotly_chart(fig)
 
 
@@ -417,13 +439,28 @@ try:
         all_messages = ' '.join(non_media['message'].astype(str).tolist())
         all_words = all_messages.split()
         word_freq = collections.Counter(all_words)
-
+    
         # Create a WordCloud
         wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_messages)
-        fig = px.imshow(wordcloud.to_array())
-        fig.update_layout(title_text="Word Cloud")
-        fig.update_xaxes(showticklabels=False)
-        fig.update_yaxes(showticklabels=False)
+    
+        # Convert WordCloud to a DataFrame
+        wordcloud_df = pd.DataFrame(word_freq.items(), columns=['Word', 'Frequency'])
+    
+        # Create a Word Cloud using Plotly Express
+        fig = px.bar(wordcloud_df, x='Word', y='Frequency', text='Word', color='Frequency',
+                     labels={'Word': 'Word', 'Frequency': 'Frequency'},
+                     title='Word Cloud',
+                     color_continuous_scale='Viridis')
+    
+        # Customize the chart layout
+        fig.update_traces(textposition='inside', textfont_size=10)
+        fig.update_layout(
+            xaxis=dict(showticklabels=False),
+            yaxis=dict(showticklabels=False),
+            showlegend=False
+        )
+    
+        # Display the WordCloud using Plotly
         st.plotly_chart(fig)
 
     # Most Active Dates
