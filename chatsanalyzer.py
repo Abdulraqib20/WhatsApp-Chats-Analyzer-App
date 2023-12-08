@@ -324,12 +324,10 @@ try:
     #     )
     #     st.altair_chart(chart, use_container_width=True)
 
-    with st.expander("Group Participants Overview", expanded=True):
-        show_all_participants = st.checkbox("Show All Participants", value=True)
-    
-        if not show_all_participants:
-            option = st.radio("Select Participants", ["Top", "Bottom"])
-            num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
+    with st.expander("Participants Overview", expanded=True):
+        option = st.radio("Select Participants", ["Top", "Bottom"])
+        num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
+        # num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
     
             if option == "Top":
                 message_counts = message_counts.nlargest(num_participants, 'message count')
