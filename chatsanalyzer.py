@@ -428,7 +428,7 @@ try:
         )
     
         # Customize the chart layout
-        fig.update_layout(width=800, height=500)
+        fig.update_layout(width=800, height=500, showgrid=False)
     
         # Display the chart using Plotly
         st.plotly_chart(fig)
