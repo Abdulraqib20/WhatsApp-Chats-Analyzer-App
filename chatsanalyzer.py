@@ -22,7 +22,7 @@ from nltk.tokenize import word_tokenize
 from nltk.probability import FreqDist
 
 import warnings
-warnings.simplefilter(action='ignore', category=UserWarning)
+warnings.filterwarnings(action='ignore')
 
 
 # Create a Streamlit app
@@ -428,7 +428,7 @@ try:
         )
     
         # Customize the chart layout
-        fig.update_layout(width=800, height=500)
+        #fig.update_layout(width=800, height=500)
     
         # Display the chart using Plotly
         st.plotly_chart(fig)
@@ -582,6 +582,7 @@ try:
         fig = px.line(member_activity_over_time, x='date', y='messages', color='member', title='Member Activity Over Time')
         st.plotly_chart(fig)
         
+
 except NameError:
     st.error('Unable to load the Stats. Please Upload a WhatsApp Chats .txt file.')
 
