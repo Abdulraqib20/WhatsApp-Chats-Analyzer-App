@@ -32,26 +32,19 @@ st.set_page_config(
     layout="wide",
 )
 
-# Center-align subheading and image using HTML <div> tags
-st.markdown(
-    """
-    <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-        <h2>WhatsApp Chats Analyzer</h2>
-
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.title(" ")
+st.markdown("<h1 style='text-align: center;'>WhatsApp Chats Analyzer</h1>", unsafe_allow_html=True)
+st.title(" ")
 st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
 
 
 # Add an introductory paragraph
 st.markdown("""
-This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib, known as raqibcodes. This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
+This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes). This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
 """)
 
 # Display a GIF image with a caption and custom dimensions
-st.caption("Demo on how to export WhatsApp chats to Text File")
+st.caption("Demo on how to export WhatsApp chats to a Text (.txt) File")
 video_url = "demo.gif" 
 st.image(video_url)
 
@@ -70,8 +63,9 @@ def data_point(line):
     
     return date_str, time_str, message
 
+st.title(" ")
 # Create a file upload widget
-uploaded_file = st.file_uploader("Upload your WhatsApp chat .txt file", type=["txt"])
+uploaded_file = st.file_uploader("Upload your WhatsApp chats .txt file", type=["txt"])
 
 try:
     
@@ -271,7 +265,7 @@ try:
 
     # Display individual member stats when a member is selected
     if selected_member:
-        st.subheader(f"Stats for {selected_member}")
+        st.subheader(f"Stats for Partcipant {selected_member}")
         member_df = df[df['member'] == selected_member]
 
         # Calculate Messages Sent
@@ -299,7 +293,7 @@ try:
         st.write(f"Emojis Sent: {emojis_sent}")
         st.write(f"Links Sent: {links_sent}")
 
-    st.title('Visualizations')
+    st.title('Visualizations & Charts')
 
     # Most Active participants
 
@@ -308,27 +302,55 @@ try:
     message_counts = df['member'].value_counts().reset_index()
     message_counts.columns = ['member', 'message count']
 
-    with st.expander("Most Active Participants", expanded=True):
+    # with st.expander("Most Active Participants", expanded=True):
+    #     show_all_participants = st.checkbox("Show All Participants", value=True)
+
+    #     if not show_all_participants:
+    #         max_participants = st.slider("Max Participants to Show", min_value=1, max_value=len(message_counts), value=len(message_counts))
+    #         message_counts = message_counts.head(max_participants)
+
+    #     # Create an Altair bar chart
+    #     chart = alt.Chart(message_counts).mark_bar().encode(
+    #         x=alt.X('member:N', title='Participant', sort='-y'), 
+    #         y=alt.Y('message count:Q', title='Number of Messages'),
+    #         color=alt.Color('member:N', legend=None),
+    #         tooltip=['member:N', 'message count:Q']
+    #     ).properties(
+    #         width=800,
+    #         height=550,
+    #         title='Most Active Participants by Message Count'
+    #     ).configure_axisX(
+    #         labelAngle=-45
+    #     )
+    #     st.altair_chart(chart, use_container_width=True)
+
+    with st.expander("Group Participants Overview", expanded=True):
         show_all_participants = st.checkbox("Show All Participants", value=True)
-
+    
         if not show_all_participants:
-            max_participants = st.slider("Max Participants to Show", min_value=1, max_value=len(message_counts), value=len(message_counts))
-            message_counts = message_counts.head(max_participants)
-
+            option = st.radio("Select Participants", ["Top", "Bottom"])
+            num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
+    
+            if option == "Top":
+                message_counts = message_counts.nlargest(num_participants, 'message count')
+            elif option == "Bottom":
+                message_counts = message_counts.nsmallest(num_participants, 'message count')
+    
         # Create an Altair bar chart
         chart = alt.Chart(message_counts).mark_bar().encode(
-            x=alt.X('member:N', title='Participant', sort='-y'), 
-            y=alt.Y('message count:Q', title='Number of Messages'),
+            x=alt.X('message count:Q', title='Number of Messages'),
+            y=alt.Y('member:N', title='Participant', sort='-x'),  # Adjusted the sort to use '-x'
             color=alt.Color('member:N', legend=None),
             tooltip=['member:N', 'message count:Q']
         ).properties(
             width=800,
             height=550,
-            title='Most Active Participants by Message Count'
-        ).configure_axisX(
-            labelAngle=-45
+            title=f'Most Active Participants by Number of Messages ({option} {num_participants})'
+        ).configure_axis(
+            # labelAngle=-45,
+            grid=False  # Hide gridlines
         )
-
+    
         st.altair_chart(chart, use_container_width=True)
 
 
@@ -349,24 +371,30 @@ try:
 
     # Create a Streamlit expander for displaying the emoji distribution chart
     with st.expander("Emoji Distribution", expanded=True):
-        # Create a Plotly bar chart of emoji frequencies with custom colors
-        fig = px.bar(
-            emoji_df,
-            x='Frequency',
-            y=emojis_only,  
-            orientation='h',  
-            title='Overall Emoji Distribution',
-            color=emojis_only, 
-            color_discrete_sequence=colors,
+        # Calculate emoji frequencies
+        total_emojis_list = [a for b in df['emojis'] for a in b]
+        emoji_counter = Counter(total_emojis_list)
+        emoji_df = pd.DataFrame(emoji_counter.items(), columns=['Emoji', 'Frequency']).sort_values(by='Frequency', ascending=False).head(40)
+    
+        # Create a bar chart using Altair
+        chart = alt.Chart(emoji_df).mark_bar().encode(
+            x=alt.X('Frequency:Q', title='Frequency'),
+            y=alt.Y('Emoji:N', title='Emoji', sort='-x'),
+            color=alt.Color('Emoji:N', scale=alt.Scale(scheme='category20')),
+            tooltip=['Emoji:N', 'Frequency:Q']
+        ).properties(
+            width=800,
+            height=500,
+            title='Emoji Distribution Chart'
+        ).configure_axis(
+            labelAngle=-45
         )
-
-        # Customize the chart layout
-        fig.update_layout(width=800, height=500, showlegend=True)
-
-        # Display the chart using Plotly
-        st.plotly_chart(fig)
+    
+        # Display the chart using Altair
+        st.altair_chart(chart, use_container_width=True)
 
     # Most commonly Used Words
+    
     # Filter out messages that contain media files
     non_media = df[~df['message'].str.contains('<Media omitted>')]
 
