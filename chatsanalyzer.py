@@ -327,12 +327,11 @@ try:
     with st.expander("Participants Overview", expanded=True):
         option = st.radio("Select Participants", ["Top", "Bottom"])
         num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
-        # num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
-    
-            if option == "Top":
-                message_counts = message_counts.nlargest(num_participants, 'message count')
-            elif option == "Bottom":
-                message_counts = message_counts.nsmallest(num_participants, 'message count')
+        #num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
+        if option == "Top":
+            message_counts = message_counts.nlargest(num_participants, 'message count')
+        elif option == "Bottom":
+            message_counts = message_counts.nsmallest(num_participants, 'message count')
     
         # Create an Altair bar chart
         chart = alt.Chart(message_counts).mark_bar().encode(
