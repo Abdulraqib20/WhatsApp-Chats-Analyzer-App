@@ -271,6 +271,10 @@ try:
         # Calculate Messages Sent
         messages_sent = member_df.shape[0]
 
+        # Calculate Percentage of Messages Sent out of Total
+        total_messages = df.shape[0]
+        percentage_messages_sent = (messages_sent / total_messages) * 100
+
         # Calculate Words per message
         words_per_message = member_df['word_count'].mean()
 
@@ -287,7 +291,7 @@ try:
         links_sent = np.sum(member_df.urlcount)
 
         # Display individual member stats
-        st.write(f"Messages Sent: {messages_sent}")
+        st.write(f"Messages Sent: {messages_sent} ({percentage_messages_sent:.2f}% of total messages)")
         st.write(f"Words per Message: {words_per_message}")
         st.write(f"Media Messages Sent: {media_messages_sent}")
         st.write(f"Emojis Sent: {emojis_sent}")
