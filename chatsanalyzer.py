@@ -302,29 +302,7 @@ try:
     message_counts = df['member'].value_counts().reset_index()
     message_counts.columns = ['member', 'message count']
 
-    # with st.expander("Most Active Participants", expanded=True):
-    #     show_all_participants = st.checkbox("Show All Participants", value=True)
-
-    #     if not show_all_participants:
-    #         max_participants = st.slider("Max Participants to Show", min_value=1, max_value=len(message_counts), value=len(message_counts))
-    #         message_counts = message_counts.head(max_participants)
-
-    #     # Create an Altair bar chart
-    #     chart = alt.Chart(message_counts).mark_bar().encode(
-    #         x=alt.X('member:N', title='Participant', sort='-y'), 
-    #         y=alt.Y('message count:Q', title='Number of Messages'),
-    #         color=alt.Color('member:N', legend=None),
-    #         tooltip=['member:N', 'message count:Q']
-    #     ).properties(
-    #         width=800,
-    #         height=550,
-    #         title='Most Active Participants by Message Count'
-    #     ).configure_axisX(
-    #         labelAngle=-45
-    #     )
-    #     st.altair_chart(chart, use_container_width=True)
-
-    with st.expander("Participants Overview", expanded=True):
+    with st.expander("Participants Overview (Bar Chart)", expanded=True):
         show_all_participants = st.checkbox("Show All Participants", value=True)
     
         if not show_all_participants:
@@ -351,6 +329,39 @@ try:
         )
     
         st.altair_chart(chart, use_container_width=True)
+
+
+    with st.expander("Participants Overview (Pie Chart)", expanded=True):
+        show_all_participants = st.checkbox("Show All Participants", key="show_all_participants", value=True)
+    
+        if not show_all_participants:
+            option = st.radio("Select Participants", ["Top", "Bottom"], key="radio")
+            num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10, key="no_input")
+    
+            if option == "Top":
+                message_counts = message_counts.nlargest(num_participants, 'message count')
+            elif option == "Bottom":
+                message_counts = message_counts.nsmallest(num_participants, 'message count')
+    
+        # Calculate the percentage of total messages
+        total_messages = message_counts['message count'].sum()
+        message_counts['Percentage'] = (message_counts['message count'] / total_messages) * 100
+    
+        # Create a donut chart using Plotly Express
+        fig = px.pie(
+            message_counts,
+            names='member',
+            values='message count',
+            hole=0.4,  # Creates a donut chart
+            title=f'Most Active Participants by Message Count',
+            labels={'member': 'Participant', 'message count': 'Number of Messages'},
+            hover_data=['Percentage'],
+            template='plotly',
+            color_discrete_sequence=px.colors.qualitative.Set1,
+        )
+    
+        # Display the donut chart using Plotly Express
+        st.plotly_chart(fig)
 
 
     # Emoji dist: Extract all emojis used in the chat and count their occurrences
