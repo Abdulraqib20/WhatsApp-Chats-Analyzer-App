@@ -7,6 +7,7 @@ import altair as alt
 
 import re
 from collections import Counter
+import collections
 import emoji
 from io import BytesIO
 import xlsxwriter
