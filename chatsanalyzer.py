@@ -346,8 +346,8 @@ try:
             color=alt.Color('member:N', legend=None),
             tooltip=['member:N', 'message count:Q']
         ).properties(
-            width=200,
-            height=250,
+            width=500,
+            height=550,
             title=f'{label} Participants by Number of Messages'
             ).configure_axis(
             grid=False
@@ -424,7 +424,7 @@ try:
         non_media = df[~df['message'].str.contains('<Media omitted>')]
     
         option = st.radio("Select Words", ["Top", "Bottom"])
-        num_words = st.number_input(f"{option} N Words", min_value=1, value=10)
+        num_words = st.number_input(f"{option} Words", min_value=1, value=10)
     
         # Calculate word frequencies
         all_messages = ' '.join(non_media['message'].astype(str).tolist())
@@ -545,8 +545,8 @@ try:
             xaxis_title='Month',
             yaxis_title='Messages Sent',
             font=dict(size=14),
-            width=250,
-            height=280
+            width=500,
+            height=550
         )
         st.plotly_chart(fig, use_container_width=True)
 
