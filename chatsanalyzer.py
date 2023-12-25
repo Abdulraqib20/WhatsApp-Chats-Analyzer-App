@@ -298,15 +298,18 @@ try:
         st.write(f"Links Sent: {links_sent}")
 
     st.title('Visualizations & Charts')
-
+    
     # Initialize session state variable for Expanders
-    
     if 'expanders_state' not in st.session_state:
-        st.session_state.expanders_state = True
-    toggle_button = st.button("Toggle Expanders")  # Button to toggle expanders
+        st.session_state.expanders_state = False
     
-    if toggle_button:      # Update session state variable on button click
+    # Button to toggle expanders
+    toggle_button = st.button("Toggle Expanders")
+    
+    # Check the state of the button to update expanders visibility
+    if toggle_button:
         st.session_state.expanders_state = not st.session_state.expanders_state
+        
 
     # Most Active participants
 
