@@ -7,7 +7,6 @@ import altair as alt
 
 import re
 from collections import Counter
-import collections
 import emoji
 from io import BytesIO
 import xlsxwriter
@@ -300,6 +299,15 @@ try:
 
     st.title('Visualizations & Charts')
 
+    # Initialize session state variable for Expanders
+    
+    if 'expanders_state' not in st.session_state:
+        st.session_state.expanders_state = True
+    toggle_button = st.button("Toggle Expanders")  # Button to toggle expanders
+    
+    if toggle_button:      # Update session state variable on button click
+        st.session_state.expanders_state = not st.session_state.expanders_state
+
     # Most Active participants
 
     participant_counts = df['member'].value_counts()
@@ -307,7 +315,7 @@ try:
     message_counts = df['member'].value_counts().reset_index()
     message_counts.columns = ['member', 'message count']
 
-    with st.expander("Group Participants Overview", expanded=True):
+    with st.expander("Group Participants Overview", expanded=st.session_state.expanders_state):
         show_all_participants = st.checkbox("Show All Participants", value=True)
     
         if not show_all_participants:
@@ -358,40 +366,6 @@ try:
             # Display the donut chart using Plotly Express
             st.plotly_chart(fig)
 
-
-    # with st.expander("Participants Overview (Pie Chart)", expanded=True):
-    #     show_all_participants = st.checkbox("Show All Participants", key="show_all_participants", value=True)
-    
-    #     # if not show_all_participants:
-    #     #     option = st.radio("Select Participants", ["Top", "Bottom"], key="radio")
-    #     #     num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10, key="no_input")
-    
-    #     #     if option == "Top":
-    #     #         message_counts = message_counts.nlargest(num_participants, 'message count')
-    #     #     elif option == "Bottom":
-    #     #         message_counts = message_counts.nsmallest(num_participants, 'message count')
-    
-    #     # Calculate the percentage of total messages
-    #     total_messages = message_counts['message count'].sum()
-    #     message_counts['Percentage'] = (message_counts['message count'] / total_messages) * 100
-    
-    #     # Create a donut chart using Plotly Express
-    #     fig = px.pie(
-    #         message_counts,
-    #         names='member',
-    #         values='message count',
-    #         hole=0.4,  # Creates a donut chart
-    #         title=f'Most Active Participants by Message Count',
-    #         labels={'member': 'Participant', 'message count': 'Number of Messages'},
-    #         hover_data=['Percentage'],
-    #         template='plotly',
-    #         color_discrete_sequence=px.colors.qualitative.Set1,
-    #     )
-    
-    #     # Display the donut chart using Plotly Express
-    #     st.plotly_chart(fig)
-
-
     # Emoji dist: Extract all emojis used in the chat and count their occurrences
 
     # Calculate emoji frequencies
@@ -408,7 +382,7 @@ try:
     colors = ['#ffd700', '#ff69b4', '#1e90ff', '#ff8c00', '#00ced1']
 
     # Create a Streamlit expander for displaying the emoji distribution chart
-    with st.expander("Emoji Distribution", expanded=True):
+    with st.expander("Emoji Distribution", expanded=st.session_state.expanders_state):
         # Calculate emoji frequencies
         total_emojis_list = [a for b in df['emojis'] for a in b]
         emoji_counter = Counter(total_emojis_list)
@@ -437,7 +411,7 @@ try:
     # Filter out messages that contain media files
     non_media = df[~df['message'].str.contains('<Media omitted>')]
 
-    with st.expander('Most Used Words', expanded=True):
+    with st.expander('Most Used Words', expanded=st.session_state.expanders_state):
         # Filter out messages that contain media files
         non_media = df[~df['message'].str.contains('<Media omitted>')]
     
@@ -474,7 +448,7 @@ try:
 
     # Word CLoud
     
-    with st.expander('Word Cloud of Messages'):
+    with st.expander('Word Cloud of Messages', expanded=st.session_state.expanders_state):
         all_messages = ' '.join(non_media['message'].astype(str).tolist())
         all_words = all_messages.split()
         word_freq = collections.Counter(all_words)
@@ -503,7 +477,7 @@ try:
 
     # Most Active Dates
 
-    with st.expander('Most Active Dates'):
+    with st.expander('Most Active Dates', expanded=st.session_state.expanders_state):
         activity_by_date = df['date'].value_counts().reset_index()
         activity_by_date.columns = ['Date', 'Activity Count']
 
@@ -514,15 +488,17 @@ try:
 
     # Most active times
 
-    with st.expander("Most Active Times", expanded=True):
+    with st.expander("Most Active Times", expanded=st.session_state.expanders_state):
+        counts = df.groupby('time').size().nlargest(20).reset_index(name='count')
+    
         fig = px.line(
-            df['time'].value_counts().head(20).reset_index(),
-            x='index',  # Time values
-            y='time',   # Message counts
-            labels={'index': 'Time of Day', 'time': 'Number of Messages'},
+            counts,
+            x='time',
+            y='count',
+            labels={'time': 'Time of Day', 'count': 'Number of Messages'},
             title='Most Active Times',
         )
-
+    
         fig.update_xaxes(title_text='Time of Day')
         fig.update_yaxes(title_text='Number of Messages')
         fig.update_layout(width=850, height=550)
@@ -530,66 +506,43 @@ try:
 
     # Most active hour of the Day
 
-    with st.expander('Most Active Hours of the Day'):
+    with st.expander('Most Active Hours of the Day', expanded=st.session_state.expanders_state):
         df['hour'] = df['time'].str.split(':', expand=True)[0]
-        time_counts = df['hour'].value_counts().reset_index().rename(columns={'index': 'hour', 'hour': 'number of messages'})
-        time_counts = time_counts.sort_values(by='hour')
-
-        fig = px.bar(time_counts, x='hour', y='number of messages', color='hour',
-                     title='Most Active Times (Hourly)')
+        time_counts = df.groupby('hour').size().reset_index(name='number of messages').sort_values(by='hour')
+        
+        fig = px.bar(
+            time_counts,
+            x='hour',
+            y='number of messages',
+            color='hour',
+            title='Most Active Times (Hourly)'
+        )
+        
         fig.update_layout(xaxis_title='Hour of the Day', yaxis_title='Number of Messages', showlegend=False)
         st.plotly_chart(fig)
 
-    # Most active times
-    # with st.expander('Most Active Times'):
-    #     time_counts = df['time'].value_counts().head(20).reset_index().rename(columns={'index': 'time', 'time': 'count'})
-    #     fig = px.bar(time_counts, x='count', y='time', orientation='h', color='time',
-    #                  title='Most Active Times of the Day')
-    #     fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Time', showlegend=False)
-
-    #     st.plotly_chart(fig)
-
-
     # Most active Days of the Week
-    with st.expander('Most Active Days of the Week'):
+    with st.expander('Most Active Days of the Week', expanded=st.session_state.expanders_state):
         df['weekday'] = df['date'].dt.day_name()
-        day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'messages'})
+        day_counts = df.groupby('weekday').size().reset_index(name='messages')
         days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
         day_counts = day_counts.sort_values('weekday')
-
-        fig = px.bar(day_counts, x='messages', y='weekday', orientation='h', color='weekday',
-                     title='Most Active Days of the Week')
+    
+        fig = px.bar(
+            day_counts,
+            x='messages',
+            y='weekday',
+            orientation='h',
+            color='weekday',
+            title='Most Active Days of the Week'
+        )
+        
         fig.update_layout(xaxis_title='Number of Messages', yaxis_title='Day of the Week', showlegend=False)
         st.plotly_chart(fig)
 
-    # with st.expander('Most Active Days of the Week'):
-    #     df['weekday'] = pd.to_datetime(df['date']).dt.day_name()
-    #     day_counts = df['weekday'].value_counts().reset_index().rename(columns={'index': 'weekday', 'weekday': 'messages'})
-
-    #     if 'weekday' in day_counts:
-    #         days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    #         day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
-    #         day_counts = day_counts.sort_values('weekday')
-
-    #         # Create an Altair bar chart
-    #         chart = alt.Chart(day_counts).mark_bar().encode(
-    #             x='messages:Q',
-    #             y=alt.Y('weekday:N', sort=days_order),
-    #             color=alt.Color('weekday:N', legend=None)
-    #         ).properties(
-    #             title='Most Active Days of the Week'
-    #         ).configure_axis(
-    #             titleFontSize=14,
-    #             labelFontSize=12
-    #         )
-
-    #         st.altair_chart(chart, use_container_width=True)
-    #     else:
-    #         st.warning("No data available for Most Active Days of the Week.")
-
     # Messages Sent Per Month
-    with st.expander('Messages Sent Per Month'):
+    with st.expander('Messages Sent Per Month', expanded=st.session_state.expanders_state):
         df['month'] = pd.to_datetime(df['date']).dt.strftime('%B')
         messages_per_month = df['month'].value_counts().reset_index()
         messages_per_month.columns = ['Month', 'Messages Sent']
@@ -604,18 +557,18 @@ try:
         st.plotly_chart(fig, use_container_width=True)
 
     # Visualize message count over time
-    with st.expander('Messages Over Time'):
+    with st.expander('Messages Over Time', expanded=st.session_state.expanders_state):
         message_count_over_time = df.groupby(['date']).size().reset_index(name='messages')
         fig = px.line(message_count_over_time, x='date', y='messages', title='Messages Over Time')
         st.plotly_chart(fig)
 
     # Visualize message length distribution
-    with st.expander('Message Length Distribution'):
+    with st.expander('Message Length Distribution', expanded=st.session_state.expanders_state):
         fig = px.histogram(df, x='message_length', title='Message Length Distribution')
         st.plotly_chart(fig)
 
     # Member Activity Over Time
-    with st.expander('Member Activity Over Time'):
+    with st.expander('Member Activity Over Time', expanded=st.session_state.expanders_state):
         member_activity_over_time = df.groupby(['date', 'member']).size().reset_index(name='messages')
         fig = px.line(member_activity_over_time, x='date', y='messages', color='member', title='Member Activity Over Time')
         st.plotly_chart(fig)
@@ -634,7 +587,7 @@ st.markdown('<hr style="border: 2px solid #ddd;">', unsafe_allow_html=True)
 st.markdown(
     """
     <div style="text-align: center; padding: 10px;">
-        Developed by <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
+        App Developed by <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
     </div>
     """,
     unsafe_allow_html=True
