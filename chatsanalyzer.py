@@ -322,100 +322,97 @@ try:
     # Most Active participants
 
     participant_counts = df['member'].value_counts()
+    
     # Count the number of messages per member
     message_counts = df['member'].value_counts().reset_index()
     message_counts.columns = ['member', 'message count']
-
+    
     with st.expander("Group Participants Overview", expanded=st.session_state.expanders_state):
-        show_all_participants = st.checkbox("Show All Participants", value=True)
+        option = st.radio("Select Participants", ["Top", "Bottom"])
+        num_participants = st.number_input(f"{option} Participants", min_value=1, max_value=len(message_counts), value=min(10, len(message_counts)))
+        # Choose a label based on the user's selection
+        label = st.text_input(f"Enter a title for the {option} Group participants", value=f"{option} {num_participants}")
     
-        if not show_all_participants:
-            option = st.radio("Select Participants", ["Top", "Bottom"])
-            num_participants = st.number_input(f"{option} N Participants", min_value=1, max_value=len(message_counts), value=10)
+        # Modify the logic to display the top/bottom N participants based on user input
+        if option == "Top":
+            message_counts = message_counts.nlargest(num_participants, 'message count')
+        elif option == "Bottom":
+            message_counts = message_counts.nsmallest(num_participants, 'message count')
     
-            # Choose a label based on the user's selection
-            label = st.text_input(f"Enter a label for {option} participants", value=f"{option} {num_participants}")
-    
-            if option == "Top":
-                message_counts = message_counts.nlargest(num_participants, 'message count')
-            elif option == "Bottom":
-                message_counts = message_counts.nsmallest(num_participants, 'message count')
-    
-            # Create an Altair bar chart
-            chart = alt.Chart(message_counts).mark_bar().encode(
-                x=alt.X('message count:Q', title='Number of Messages'),
-                y=alt.Y('member:N', title='Participant', sort='-x'),
-                color=alt.Color('member:N', legend=None),
-                tooltip=['member:N', 'message count:Q']
-            ).properties(
-                width=800,
-                height=550,
-                title=f'{label} Participants by Number of Messages'
-            ).configure_axis(
-                grid=False
-            )
-            st.altair_chart(chart, use_container_width=True)
-    
-            # Participants Overview (Pie Chart)
-            # Calculate the percentage of total messages
-            total_messages = message_counts['message count'].sum()
-            message_counts['Percentage'] = (message_counts['message count'] / total_messages) * 100
-    
-            # Create a donut chart using Plotly Express
-            fig = px.pie(
-                message_counts,
-                names='member',
-                values='message count',
-                hole=0.4,
-                title=f'{label} Participants by Number of Messages',
-                labels={'member': 'Participant', 'message count': 'Number of Messages'},
-                hover_data=['Percentage'],
-                template='plotly',
-                color_discrete_sequence=px.colors.qualitative.Set1,
-            )
-    
-            # Display the donut chart using Plotly Express
-            st.plotly_chart(fig)
-
-    # Emoji dist: Extract all emojis used in the chat and count their occurrences
-
-    # Calculate emoji frequencies
-    total_emojis_list = list([a for b in df['emojis'] for a in b])
-    emoji_dict = dict(collections.Counter(total_emojis_list))
-    emoji_dict = sorted(emoji_dict.items(), key=lambda x: x[1], reverse=True)
-    emoji_df = pd.DataFrame(emoji_dict, columns=['Emoji', 'Frequency'])
-    emoji_df = emoji_df.head(40)
-
-    # Create a list of just the emojis
-    emojis_only = emoji_df['Emoji']
-
-    # Define custom colors for the bar chart
-    colors = ['#ffd700', '#ff69b4', '#1e90ff', '#ff8c00', '#00ced1']
-
-    # Create a Streamlit expander for displaying the emoji distribution chart
-    with st.expander("Emoji Distribution", expanded=st.session_state.expanders_state):
-        # Calculate emoji frequencies
-        total_emojis_list = [a for b in df['emojis'] for a in b]
-        emoji_counter = Counter(total_emojis_list)
-        emoji_df = pd.DataFrame(emoji_counter.items(), columns=['Emoji', 'Frequency']).sort_values(by='Frequency', ascending=False).head(40)
-    
-        # Create a bar chart using Altair
-        chart = alt.Chart(emoji_df).mark_bar().encode(
-            x=alt.X('Frequency:Q', title='Frequency'),
-            y=alt.Y('Emoji:N', title='Emoji', sort='-x'),
-            color=alt.Color('Emoji:N', scale=alt.Scale(scheme='category20')),
-            tooltip=['Emoji:N', 'Frequency:Q']
+        # Create an Altair bar chart
+        chart = alt.Chart(message_counts).mark_bar().encode(
+            x=alt.X('message count:Q', title='Number of Messages'),
+            y=alt.Y('member:N', title='Participant', sort='-x'),
+            color=alt.Color('member:N', legend=None),
+            tooltip=['member:N', 'message count:Q']
         ).properties(
-            width=800,
-            height=500,
-            title='Emoji Distribution Chart'
-        ).configure_axis(
-            # labelAngle=-45,
-            grid=False  # Hide gridlines
+            width=200,
+            height=250,
+            title=f'{label} Participants by Number of Messages'
+            ).configure_axis(
+            grid=False
+            )
+        st.altair_chart(chart, use_container_width=True)
+    
+        # Participants Overview (Pie Chart)
+            
+        # Calculate the percentage of total messages
+        total_messages = message_counts['message count'].sum()
+        message_counts['Percentage'] = (message_counts['message count'] / total_messages) * 100
+    
+        # Create a donut chart using Plotly Express
+        fig = px.pie(
+            message_counts,
+            names='member',
+            values='message count',
+            hole=0.4,
+            title=f'{label} Participants by Number of Messages',
+            labels={'member': 'Participant', 'message count': 'Number of Messages'},
+            hover_data=['Percentage'],
+            template='plotly',
+            color_discrete_sequence=px.colors.qualitative.Set1,
         )
     
-        # Display the chart using Altair
-        st.altair_chart(chart, use_container_width=True)
+        # Display the donut chart using Plotly Express
+        st.plotly_chart(fig)
+
+
+    # Emoji dist: Extract all emojis used in the chat and count their occurrences
+    
+    # Calculate emoji frequencies
+    total_emojis_list = [a for b in df['emojis'] for a in b]
+    emoji_counter = Counter(total_emojis_list)
+    emoji_df = pd.DataFrame(emoji_counter.items(), columns=['Emoji', 'Frequency']).sort_values(by='Frequency', ascending=False)
+
+   # Create a Streamlit expander for displaying the emoji distribution
+    with st.expander("Emoji Distribution", expanded=st.session_state.expanders_state):
+        num_emojis = st.slider(f"Number of Emojis to Display", min_value=1, max_value=len(emoji_df), value=10)
+        
+        # Choose a label based on the user's selection
+        option = "Top" 
+        label = st.text_input(f"Enter a title for {option} emojis", value=f"{option} {num_emojis}")
+    
+        if st.checkbox("Show Bottom Emojis", value=False):
+            option = "Bottom"
+            label = st.text_input(f"Enter a title for {option} emojis", value=f"{option} {num_emojis}")
+            emoji_df = emoji_df.nsmallest(num_emojis, 'Frequency')
+        else:
+            emoji_df = emoji_df.nlargest(num_emojis, 'Frequency')
+    
+        # Create a horizontal bar chart using Plotly Express
+        fig = px.bar(
+            emoji_df,
+            x='Frequency',
+            y='Emoji',
+            orientation='h',
+            title=f'{label} Emojis Distribution Bar Chart',
+            labels={'Emoji': 'Emoji', 'Frequency': 'Frequency'},
+            color='Emoji',
+            color_discrete_map=dict(zip(emoji_df['Emoji'], px.colors.qualitative.Set1))
+        )
+    
+        # Display the bar chart
+        st.plotly_chart(fig, use_container_width=True)
 
     # Most commonly Used Words
     
@@ -439,6 +436,9 @@ try:
         elif option == "Bottom":
             top_words = word_counter.most_common()[-num_words:]
     
+        # Sort words in descending order of magnitude
+        top_words = sorted(top_words, key=lambda x: x[1], reverse=False)
+    
         words_df = pd.DataFrame(top_words, columns=['Word', 'Frequency'])
     
         # Create a bar chart using Plotly Express
@@ -449,9 +449,6 @@ try:
             title=f'{option} {num_words} Used Words Chart',
             labels={'Word': 'Word', 'Frequency': 'Frequency'},
         )
-    
-        # Customize the chart layout
-        #fig.update_layout(width=800, height=500)
     
         # Display the chart using Plotly
         st.plotly_chart(fig)
@@ -544,8 +541,13 @@ try:
 
         fig = px.bar(messages_per_month, x='Month', y='Messages Sent', title='Messages Sent Per Month')
         fig.update_traces(marker_color='rgb(63, 72, 204)')
-        fig.update_layout(xaxis_title='Month', yaxis_title='Messages Sent', font=dict(size=14))
-
+        fig.update_layout(
+            xaxis_title='Month',
+            yaxis_title='Messages Sent',
+            font=dict(size=14),
+            width=250,
+            height=280
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     # Visualize message count over time
@@ -615,16 +617,16 @@ try:
 #             # Tokenize the input text
 #             tokens = tokenizer.encode(text, return_tensors='pt')
     
-            # # Get model predictions
-            # with torch.no_grad():
-            #     result = model(tokens)
+#             # Get model predictions
+#             with torch.no_grad():
+#                 result = model(tokens)
     
-            # # Obtain predicted class index
-            # predicted_index = torch.argmax(result.logits).item()
+#             # Obtain predicted class index
+#             predicted_index = torch.argmax(result.logits).item()
     
-            # # Map scores to labels
-            # if label_mapping is not None:
-            #     predicted_label = label_mapping.get(predicted_index + 1, f'Class {predicted_index + 1}')
+#             # Map scores to labels
+#             if label_mapping is not None:
+#                 predicted_label = label_mapping.get(predicted_index + 1, f'Class {predicted_index + 1}')
     
 #             # Calculate confidence percentage
 #             probabilities = softmax(result.logits, dim=1)
@@ -677,7 +679,7 @@ st.markdown('<hr style="border: 2px solid #ddd;">', unsafe_allow_html=True)
 st.markdown(
     """
     <div style="text-align: center; padding: 10px;">
-        App Developed By <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
+        App Developed by <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
     </div>
     """,
     unsafe_allow_html=True
