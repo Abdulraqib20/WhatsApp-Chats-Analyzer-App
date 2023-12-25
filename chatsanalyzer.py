@@ -19,7 +19,18 @@ from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import nltk 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 from nltk.probability import FreqDist
+
+# # Sentiment Analysis
+# from transformers import AutoTokenizer, AutoModelForSequenceClassification
+# import torch.nn.functional as F
+# from torch.nn.functional import softmax
+# import torch
+# from sklearn.model_selection import train_test_split
+# import requests
+# from bs4 import BeautifulSoup
+# import string
 
 import warnings
 warnings.filterwarnings(action='ignore')
@@ -298,18 +309,15 @@ try:
         st.write(f"Links Sent: {links_sent}")
 
     st.title('Visualizations & Charts')
-    
+
     # Initialize session state variable for Expanders
+    
     if 'expanders_state' not in st.session_state:
         st.session_state.expanders_state = False
+    toggle_button = st.button("Toggle Expanders")  # Button to toggle expanders
     
-    # Button to toggle expanders
-    toggle_button = st.button("Toggle Expanders")
-    
-    # Check the state of the button to update expanders visibility
-    if toggle_button:
+    if toggle_button:      # Update session state variable on button click
         st.session_state.expanders_state = not st.session_state.expanders_state
-        
 
     # Most Active participants
 
@@ -455,28 +463,9 @@ try:
         all_messages = ' '.join(non_media['message'].astype(str).tolist())
         all_words = all_messages.split()
         word_freq = collections.Counter(all_words)
-    
-        # Create a WordCloud
+        
         wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_messages)
-    
-        # Convert WordCloud to an image
-        image_array = wordcloud.to_array()
-    
-        # Create a custom color scale
-        colorscale = px.colors.sequential.Viridis
-    
-        # Create a Plotly Express image chart
-        fig = px.imshow(image_array, color_continuous_scale=colorscale)
-        fig.update_layout(
-            title_text="Word Cloud",
-            xaxis=dict(showticklabels=False),
-            yaxis=dict(showticklabels=False),
-            coloraxis_showscale=False,
-            margin=dict(l=0, r=0, b=0, t=40)
-        )
-    
-        # Display the Word Cloud using Plotly Express
-        st.plotly_chart(fig)
+        st.image(wordcloud.to_image())
 
     # Most Active Dates
 
@@ -529,7 +518,7 @@ try:
         df['weekday'] = df['date'].dt.day_name()
         day_counts = df.groupby('weekday').size().reset_index(name='messages')
         days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
+        # day_counts['weekday'] = pd.Categorical(day_counts['weekday'], categories=days_order, ordered=True)
         day_counts = day_counts.sort_values('weekday')
     
         fig = px.bar(
@@ -575,11 +564,109 @@ try:
         member_activity_over_time = df.groupby(['date', 'member']).size().reset_index(name='messages')
         fig = px.line(member_activity_over_time, x='date', y='messages', color='member', title='Member Activity Over Time')
         st.plotly_chart(fig)
+
+# # Sentiment Analysis
+
+#     # Function to preprocess a single text
+#     def preprocess_text(text):
+#         # Define the denoise_text function
+#         def denoise_text(text):
+#             text = strip_html(text)
+#             return text
         
+#         # Define the strip_html function
+#         def strip_html(text):
+#             soup = BeautifulSoup(text, "html.parser")
+#             return soup.get_text()
+        
+#         # Apply denoising functions
+#         text = denoise_text(text)
+        
+#         # Convert to lowercase
+#         text = text.lower()
+        
+#         # Remove URLs, hashtags, mentions, and special characters
+#         text = re.sub(r"http\S+|www\S+|@\w+|#\w+", "", text)
+#         text = re.sub(r"[^\w\s]", "", text)
+        
+#         # Remove numbers/digits
+#         text = re.sub(r'\b[0-9]+\b\s*', '', text)
+        
+#         # Remove punctuation
+#         text = ''.join([char for char in text if char not in string.punctuation])
+        
+#         # Tokenize the text
+#         tokens = word_tokenize(text)
+        
+#         # Remove stop words
+#         stop_words = set(stopwords.words('english'))
+#         tokens = [token for token in tokens if token not in stop_words]
+        
+#         # Lemmatize the words
+#         lemmatizer = WordNetLemmatizer()
+#         tokens = [lemmatizer.lemmatize(token) for token in tokens]
+        
+#         # Join tokens back into a single string
+#         return ' '.join(tokens)
+
+#     # calculate sentiment scoring
+#     def sentiment_score(text, model, tokenizer, label_mapping={1: 'Negative', 2: 'Neutral', 3: 'Positive'}):
+#         try:
+#             # Tokenize the input text
+#             tokens = tokenizer.encode(text, return_tensors='pt')
+    
+            # # Get model predictions
+            # with torch.no_grad():
+            #     result = model(tokens)
+    
+            # # Obtain predicted class index
+            # predicted_index = torch.argmax(result.logits).item()
+    
+            # # Map scores to labels
+            # if label_mapping is not None:
+            #     predicted_label = label_mapping.get(predicted_index + 1, f'Class {predicted_index + 1}')
+    
+#             # Calculate confidence percentage
+#             probabilities = softmax(result.logits, dim=1)
+#             confidence_percentage = str(probabilities[0, predicted_index].item() * 100) + '%'
+    
+#             # Return results
+#             return {
+#                 'predicted_label': predicted_label,
+#                 'predicted_index': predicted_index + 1,
+#                 'confidence_percentage': confidence_percentage
+#             }
+    
+#         except Exception as e:
+#             return {
+#                 'error': str(e)
+#             }
+
+#     # model name
+#     model_name = 'cardiffnlp/twitter-roberta-base-sentiment-latest'
+#     # load directory of saved model
+#     save_directory = r"C:\Users\user\Desktop\MACHINE LEARNING\Sentiment Analysis\New folder"
+#     # load model from the local directory
+#     tokenizer = AutoTokenizer.from_pretrained(save_directory)
+#     model = AutoModelForSequenceClassification.from_pretrained(save_directory)
+
+    # st.title('Sentiment Analysis')
+    # df['message'] = df['message'].astype('str')
+    # # Apply sentiment analysis to the entire 'df['message']' column
+    # df['processed_message'] = df['message'].apply(preprocess_text)
+    # df['sentiment_results'] = df['processed_message'].apply(lambda x: sentiment_score(x, model, tokenizer))
+        
+    # # Display sentiment analysis results in a DataFrame
+    # st.title('Sentiment Analysis Results')
+    # st.write(df[['message', 'sentiment_results']])
+        
+    # # Breakdown of sentiments
+    # sentiment_counts = df['sentiment_results'].apply(lambda x: x.get('predicted_label')).value_counts()
+    # st.subheader('Sentiment Breakdown:')
+    # st.write(sentiment_counts)
 
 except NameError:
     st.error('Unable to load the Stats. Please Upload a WhatsApp Chats .txt file.')
-
     
 # footer
 
@@ -590,7 +677,7 @@ st.markdown('<hr style="border: 2px solid #ddd;">', unsafe_allow_html=True)
 st.markdown(
     """
     <div style="text-align: center; padding: 10px;">
-        App Developed by <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
+        App Developed By <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
     </div>
     """,
     unsafe_allow_html=True
