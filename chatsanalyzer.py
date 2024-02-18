@@ -41,6 +41,7 @@ st.set_page_config(
     page_title="Raqib's WhatsApp Chats Analyzer",
     page_icon="icons8-whatsapp-48.png",
     layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 st.title(" ")
@@ -678,8 +679,10 @@ st.markdown('<hr style="border: 2px solid #ddd;">', unsafe_allow_html=True)
 # footer text
 st.markdown(
     """
-    <div style="text-align: center; padding: 10px;">
-        App Developed by <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
+    <div style="display: flex; justify-content: center; align-items: center; text-align: center; padding: 10px; background-color: #f0f0f0; border-radius: 10px;">
+        <p style="font-size: 18px; color: #555;">App Developed by 
+        <a href="https://twitter.com/raqibcodes" target="_blank" style="color: #3498db; text-decoration: none; font-weight: bold;">raqibcodes</a>
+        </p>
     </div>
     """,
     unsafe_allow_html=True
