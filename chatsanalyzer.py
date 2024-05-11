@@ -52,7 +52,7 @@ st.markdown(
         .main-header {
             background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
             color: white; /* White text for the header */
-            padding: 25px; /* Increased padding for more space */
+            padding: 10px; /* Increased padding for more space */
             text-align: center;
             border-radius: 10px; /* Rounded corners for a softer look */
             box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
@@ -89,10 +89,46 @@ st.markdown(
 )
 
 
-# Add an introductory paragraph
-st.markdown("""
-This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes). This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
-""")
+st.markdown(
+    """
+    <style>
+        .intro-section, .get-started-section {
+            # background-color: #fff; /* White background */
+            border: 1px solid #ddd; /* Subtle border */
+            padding: 25px; /* More padding for better readability */
+            border-radius: 10px; /* Rounded corners for a softer look */
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+        }
+
+        .intro-section h2, .get-started-section h3 {
+            color: #fffff;
+            margin-bottom: 15px;
+        }
+
+        .intro-section p, .get-started-section p {
+            line-height: 1.6;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# --- How to Use ---
+with st.container():
+    st.markdown(
+        """
+        <div class="get-started-section">
+            <h3>Get Started</h3>
+            <p>
+                This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes). 
+                This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, 
+                and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, 
+                this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # Display a GIF image with a caption and custom dimensions
 st.caption("Demo on how to export WhatsApp chats to a Text (.txt) File")
