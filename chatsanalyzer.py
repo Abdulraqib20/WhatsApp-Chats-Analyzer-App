@@ -52,9 +52,9 @@ st.markdown(
         .main-header {
             background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
             color: white; /* White text for the header */
-            padding: 10px; /* Increased padding for more space */
+            padding: 7px; /* Increased padding for more space */
             text-align: center;
-            border-radius: 10px; /* Rounded corners for a softer look */
+            border-radius: 8px; /* Rounded corners for a softer look */
             box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
         }
 
@@ -130,6 +130,8 @@ with st.container():
         unsafe_allow_html=True,
     )
 
+st.title(" ")
+st.title(" ")
 # Display a GIF image with a caption and custom dimensions
 st.caption("Demo on how to export WhatsApp chats to a Text (.txt) File")
 video_url = "demo.gif" 
