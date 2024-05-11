@@ -60,7 +60,7 @@ st.markdown(
         }
 
         .main-header h1 {
-            font-size: 1.5rem; /* Larger font size for the header */
+            font-size: 2.2rem; /* Larger font size for the header */
         }
 
         /* Style for the "rocket" emoji */
@@ -173,7 +173,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title(" ")
 st.title(" ")
 # Display a GIF image with a caption and custom dimensions
 st.caption("Demo on how to export WhatsApp chats to a Text (.txt) File")
@@ -794,7 +793,6 @@ except NameError:
 # ---footer---
 
 # footer text
-st.title(" ")
 st.title(" ")
 
 st.markdown(
