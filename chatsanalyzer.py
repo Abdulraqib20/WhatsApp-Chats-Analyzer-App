@@ -52,9 +52,9 @@ st.markdown(
         .main-header {
             background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
             color: white; /* White text for the header */
-            padding: 7px; /* Increased padding for more space */
+            padding: 6px; /* Increased padding for more space */
             text-align: center;
-            border-radius: 8px; /* Rounded corners for a softer look */
+            border-radius: 12px; /* Rounded corners for a softer look */
             box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
         }
 
@@ -118,7 +118,7 @@ with st.container():
     st.markdown(
         """
         <div class="get-started-section">
-            <h3>Get Started</h3>
+            <h3>How To Use</h3>
             <p>
                 This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes). 
                 This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, 
