@@ -44,10 +44,49 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-st.title(" ")
-st.markdown("<h1 style='text-align: center;'>WhatsApp Chats Analyzer</h1>", unsafe_allow_html=True)
-st.title(" ")
-st.image("rachit-tank-lZBs-lD9LPQ-unsplash.jpg")
+# --- Styling ---
+
+st.markdown(
+    """
+    <style>
+        .main-header {
+            background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
+            color: white; /* White text for the header */
+            padding: 25px; /* Increased padding for more space */
+            text-align: center;
+            border-radius: 10px; /* Rounded corners for a softer look */
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+        }
+
+        .main-header h1 {
+            font-size: 3rem; /* Larger font size for the header */
+        }
+
+        /* Style for the "rocket" emoji */
+        .main-header h1 span {
+            animation: rocket-animation 2s linear infinite; /* Add animation */
+        }
+
+        @keyframes rocket-animation {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# --- Header ---
+
+st.markdown(
+    """
+    <div class="main-header">
+        <h1>WhatsApp Chats Analyzer</span></h1>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 # Add an introductory paragraph
@@ -671,19 +710,69 @@ try:
 except NameError:
     st.error('Unable to load the Stats. Please Upload a WhatsApp Chats .txt file.')
     
-# footer
-
-# line separator
-st.markdown('<hr style="border: 2px solid #ddd;">', unsafe_allow_html=True)
+# ---footer---
 
 # footer text
+st.title(" ")
+st.title(" ")
+
 st.markdown(
     """
-    <div style="display: flex; justify-content: center; align-items: center; text-align: center; padding: 10px; background-color: #f0f0f0; border-radius: 10px;">
-        <p style="font-size: 18px; color: #555;">App Developed by 
-        <a href="https://twitter.com/raqibcodes" target="_blank" style="color: #3498db; text-decoration: none; font-weight: bold;">raqibcodes</a>
+    <style>
+        footer {
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            padding: 25px; /* More padding for a comfortable feel */
+            background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
+            color: white;
+            font-size: 18px;
+            border-radius: 15px; /* Softer rounded corners */
+            margin-top: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+        }
+
+        footer p {
+            margin: 0; /* Remove default margin for better control */
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            position: relative; /* For positioning the pseudo-element */
+            transition: all 0.3s ease; /* Smoother transitions for all properties */
+        }
+
+        footer a::after {
+            content: "";
+            position: absolute;
+            bottom: -4px; /* Adjust position of underline */
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #fff; /* White underline */
+            transform: scaleX(0); /* Initially hidden */
+            transform-origin: left; /* Animate from the left */
+            transition: transform 0.3s ease; /* Smooth transition */
+        }
+
+        footer a:hover::after {
+            transform: scaleX(1); /* Show underline on hover */
+        }
+
+        footer a:hover {
+            color: #f5f5f5; /* Slightly lighter color on hover */
+            letter-spacing: 1px; /* Subtle letter spacing increase on hover */
+        }
+    </style>
+
+    <footer>
+        <p>
+            Made with ❤️ by&nbsp;
+            <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
         </p>
-    </div>
+    </footer>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
