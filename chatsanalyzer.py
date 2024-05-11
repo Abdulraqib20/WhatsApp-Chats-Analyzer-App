@@ -2,6 +2,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import base64
 import plotly.express as px
 import altair as alt
 
@@ -79,15 +80,28 @@ st.markdown(
 
 # --- Header ---
 
+
+with open("icons8-whatsapp-48.png", "rb") as f:  
+    favicon_data = f.read()
+    b64_favicon = base64.b64encode(favicon_data).decode()
+
+# --- Header ---
 st.markdown(
-    """
+    f"""
+    <style>
+        .whatsapp-icon {{
+            height: 30px; /* Adjust as needed */
+            margin-right: 10px; /* Adjust as needed */
+            vertical-align: middle;
+        }}
+    </style>
+
     <div class="main-header">
-        <h1>WhatsApp Chats Analyzer</span></h1>
+        <h1><img src="data:image/png;base64,{b64_favicon}" class="whatsapp-icon">WhatsApp Chats Analyzer</h1> 
     </div>
     """,
     unsafe_allow_html=True,
 )
-
 
 st.markdown(
     """
@@ -113,22 +127,51 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- How to Use ---
+# --- How To Use ---
 with st.container():
-    st.markdown(
-        """
-        <div class="get-started-section">
-            <h3>How To Use</h3>
-            <p>
-                This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes). 
-                This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, 
-                and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, 
-                this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    with st.expander("How To Use"):  # Wrap the content in an expander
+        st.markdown(
+            """
+            <div class="get-started-section">
+                <p>
+                    This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes). 
+                    This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, 
+                    and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, 
+                    this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+# --- Styling ---
+st.markdown(
+    """
+    <style>
+        /* Existing styles... */
+
+        .get-started-section {
+            padding: 15px; /* Reduce padding a bit when inside the expander */
+            border: none;   /* Remove the border to look cleaner within the expander */
+            box-shadow: none;
+        }
+
+        .stExpanderHeader { /* Style the expander header */
+            background-color: #007bff; /* Blue background */
+            color: white;
+            padding: 10px 15px; /* Adjust padding to your preference */
+            font-weight: bold;
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Indicate it's clickable */
+        }
+
+        .stExpanderContent p {
+            margin-top: 0; /* Remove extra margin at the top of the content */
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.title(" ")
 st.title(" ")
