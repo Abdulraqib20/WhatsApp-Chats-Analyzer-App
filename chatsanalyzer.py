@@ -53,14 +53,14 @@ st.markdown(
         .main-header {
             background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
             color: white; /* White text for the header */
-            padding: 6px; /* Increased padding for more space */
+            padding: 5px; /* Increased padding for more space */
             text-align: center;
-            border-radius: 12px; /* Rounded corners for a softer look */
+            border-radius: 13px; /* Rounded corners for a softer look */
             box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
         }
 
         .main-header h1 {
-            font-size: 3rem; /* Larger font size for the header */
+            font-size: 1.5rem; /* Larger font size for the header */
         }
 
         /* Style for the "rocket" emoji */
@@ -90,8 +90,8 @@ st.markdown(
     f"""
     <style>
         .whatsapp-icon {{
-            height: 30px; /* Adjust as needed */
-            margin-right: 10px; /* Adjust as needed */
+            height: 50px; 
+            margin-right: 15px;
             vertical-align: middle;
         }}
     </style>
