@@ -222,7 +222,7 @@ st.markdown(
 
         /* Intro and get started sections */
         .section {
-            background-color: #fff;
+            # background-color: #fff;
             border: 1px solid #ddd;
             padding: 25px;
             border-radius: 10px;
