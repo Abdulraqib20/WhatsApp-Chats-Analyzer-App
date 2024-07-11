@@ -27,6 +27,150 @@ import warnings
 warnings.filterwarnings(action='ignore')
 
 
+# # Create a Streamlit app
+# st.set_page_config(
+#     page_title="Raqib's WhatsApp Chats Analyzer",
+#     page_icon="icons8-whatsapp-48.png",
+#     layout="wide",
+#     initial_sidebar_state="collapsed"
+# )
+
+# # --- Styling ---
+
+# st.markdown(
+#     """
+#     <style>
+#         .main-header {
+#             color: white; /* White text for the header */
+#             padding: 5px; /* Increased padding for more space */
+#             text-align: center;
+#             border-radius: 13px; /* Rounded corners for a softer look */
+#             box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+#         }
+
+#         .main-header h1 {
+#             font-size: 2.2rem; /* Larger font size for the header */
+#         }
+
+#         /* Style for the "rocket" emoji */
+#         .main-header h1 span {
+#             animation: rocket-animation 2s linear infinite; /* Add animation */
+#         }
+
+#         @keyframes rocket-animation {
+#             0% { transform: translateY(0); }
+#             50% { transform: translateY(-10px); }
+#             100% { transform: translateY(0); }
+#         }
+#     </style>
+#     """,
+#     unsafe_allow_html=True,
+# )
+
+# # --- Header ---
+
+
+# with open("icons8-whatsapp-48.png", "rb") as f:  
+#     favicon_data = f.read()
+#     b64_favicon = base64.b64encode(favicon_data).decode()
+
+# # --- Header ---
+# st.markdown(
+#     f"""
+#     <style>
+#         .whatsapp-icon {{
+#             height: 50px; 
+#             margin-right: 15px;
+#             vertical-align: middle;
+#         }}
+#     </style>
+
+#     <div class="main-header">
+#         <h1><img src="data:image/png;base64,{b64_favicon}" class="whatsapp-icon">WhatsApp Chats Analyzer</h1> 
+#     </div>
+#     """,
+#     unsafe_allow_html=True,
+# )
+
+# st.markdown(
+#     """
+#     <style>
+#         .intro-section, .get-started-section {
+#             # background-color: #fff; /* White background */
+#             border: 1px solid #ddd; /* Subtle border */
+#             padding: 25px; /* More padding for better readability */
+#             border-radius: 10px; /* Rounded corners for a softer look */
+#             box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+#         }
+
+#         .intro-section h2, .get-started-section h3 {
+#             color: #fffff;
+#             margin-bottom: 15px;
+#         }
+
+#         .intro-section p, .get-started-section p {
+#             line-height: 1.6;
+#         }
+#     </style>
+#     """,
+#     unsafe_allow_html=True,
+# )
+
+# # --- How To Use ---
+# with st.container():
+#     with st.expander("How To Use"):  # Wrap the content in an expander
+#         st.markdown(
+#             """
+#             <div class="get-started-section">
+#                 <p>
+#                     This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes). 
+#                     This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, 
+#                     and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, 
+#                     this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
+#                 </p>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+# # --- Styling ---
+# st.markdown(
+#     """
+#     <style>
+#         /* Existing styles... */
+
+#         .get-started-section {
+#             padding: 15px; /* Reduce padding a bit when inside the expander */
+#             border: none;   /* Remove the border to look cleaner within the expander */
+#             box-shadow: none;
+#         }
+
+#         .stExpanderHeader { /* Style the expander header */
+#             background-color: #007bff; /* Blue background */
+#             color: white;
+#             padding: 10px 15px; /* Adjust padding to your preference */
+#             font-weight: bold;
+#             border-radius: 5px; /* Rounded corners */
+#             cursor: pointer; /* Indicate it's clickable */
+#         }
+
+#         .stExpanderContent p {
+#             margin-top: 0; /* Remove extra margin at the top of the content */
+#         }
+#     </style>
+#     """,
+#     unsafe_allow_html=True,
+# )
+
+# st.title(" ")
+# # Display a GIF image with a caption and custom dimensions
+# st.caption("Demo on how to export WhatsApp chats to a Text (.txt) File")
+# video_url = "demo.gif" 
+# st.image(video_url)
+
+import streamlit as st
+import base64
+
 # Create a Streamlit app
 st.set_page_config(
     page_title="Raqib's WhatsApp Chats Analyzer",
@@ -36,31 +180,81 @@ st.set_page_config(
 )
 
 # --- Styling ---
-
 st.markdown(
     """
     <style>
+        /* General */
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            background-color: #f4f4f9;
+        }
+
+        /* Header */
         .main-header {
-            color: white; /* White text for the header */
-            padding: 5px; /* Increased padding for more space */
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
             text-align: center;
-            border-radius: 13px; /* Rounded corners for a softer look */
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         .main-header h1 {
-            font-size: 2.2rem; /* Larger font size for the header */
+            font-size: 2.5rem;
+            margin: 0;
         }
 
-        /* Style for the "rocket" emoji */
+        /* Rocket emoji animation */
         .main-header h1 span {
-            animation: rocket-animation 2s linear infinite; /* Add animation */
+            display: inline-block;
+            animation: rocket-animation 2s linear infinite;
         }
 
         @keyframes rocket-animation {
-            0% { transform: translateY(0); }
+            0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
+        }
+
+        /* WhatsApp icon */
+        .whatsapp-icon {
+            height: 50px;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        /* Intro and get started sections */
+        .section {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .section h2, .section h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .section p {
+            line-height: 1.6;
+        }
+
+        /* Expander header */
+        .stExpanderHeader {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .stExpanderContent p {
+            margin-top: 0;
         }
     </style>
     """,
@@ -68,23 +262,12 @@ st.markdown(
 )
 
 # --- Header ---
-
-
 with open("icons8-whatsapp-48.png", "rb") as f:  
     favicon_data = f.read()
     b64_favicon = base64.b64encode(favicon_data).decode()
 
-# --- Header ---
 st.markdown(
     f"""
-    <style>
-        .whatsapp-icon {{
-            height: 50px; 
-            margin-right: 15px;
-            vertical-align: middle;
-        }}
-    </style>
-
     <div class="main-header">
         <h1><img src="data:image/png;base64,{b64_favicon}" class="whatsapp-icon">WhatsApp Chats Analyzer</h1> 
     </div>
@@ -92,40 +275,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    """
-    <style>
-        .intro-section, .get-started-section {
-            # background-color: #fff; /* White background */
-            border: 1px solid #ddd; /* Subtle border */
-            padding: 25px; /* More padding for better readability */
-            border-radius: 10px; /* Rounded corners for a softer look */
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
-        }
-
-        .intro-section h2, .get-started-section h3 {
-            color: #fffff;
-            margin-bottom: 15px;
-        }
-
-        .intro-section p, .get-started-section p {
-            line-height: 1.6;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 # --- How To Use ---
 with st.container():
-    with st.expander("How To Use"):  # Wrap the content in an expander
+    with st.expander("How To Use"):
         st.markdown(
             """
-            <div class="get-started-section">
+            <div class="section get-started-section">
                 <p>
-                    This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes). 
-                    This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights, 
-                    and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats, 
+                    This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes).
+                    This application offers you a delightful and straightforward way to analyze your WhatsApp conversations. Dive into your chats, uncover valuable insights,
+                    and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, most active times and other amazing stats,
                     this tool has got you covered. It's not just a utility; it's an exciting journey through your messages. Share this incredible experience with your friends and let the fun begin!😎
                 </p>
             </div>
@@ -133,40 +292,12 @@ with st.container():
             unsafe_allow_html=True,
         )
 
-# --- Styling ---
-st.markdown(
-    """
-    <style>
-        /* Existing styles... */
-
-        .get-started-section {
-            padding: 15px; /* Reduce padding a bit when inside the expander */
-            border: none;   /* Remove the border to look cleaner within the expander */
-            box-shadow: none;
-        }
-
-        .stExpanderHeader { /* Style the expander header */
-            background-color: #007bff; /* Blue background */
-            color: white;
-            padding: 10px 15px; /* Adjust padding to your preference */
-            font-weight: bold;
-            border-radius: 5px; /* Rounded corners */
-            cursor: pointer; /* Indicate it's clickable */
-        }
-
-        .stExpanderContent p {
-            margin-top: 0; /* Remove extra margin at the top of the content */
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
+# --- Display a GIF image with a caption ---
 st.title(" ")
-# Display a GIF image with a caption and custom dimensions
 st.caption("Demo on how to export WhatsApp chats to a Text (.txt) File")
 video_url = "demo.gif" 
 st.image(video_url)
+
 
 def date_time(s):
     pattern = r'^\d{1,2}/\d{1,2}/\d{2}, \d{1,2}:\d{2}'
@@ -675,106 +806,6 @@ try:
         member_activity_over_time = df.groupby(['date', 'member']).size().reset_index(name='messages')
         fig = px.line(member_activity_over_time, x='date', y='messages', color='member', title='Member Activity Over Time')
         st.plotly_chart(fig)
-
-# # Sentiment Analysis
-
-#     # Function to preprocess a single text
-#     def preprocess_text(text):
-#         # Define the denoise_text function
-#         def denoise_text(text):
-#             text = strip_html(text)
-#             return text
-        
-#         # Define the strip_html function
-#         def strip_html(text):
-#             soup = BeautifulSoup(text, "html.parser")
-#             return soup.get_text()
-        
-#         # Apply denoising functions
-#         text = denoise_text(text)
-        
-#         # Convert to lowercase
-#         text = text.lower()
-        
-#         # Remove URLs, hashtags, mentions, and special characters
-#         text = re.sub(r"http\S+|www\S+|@\w+|#\w+", "", text)
-#         text = re.sub(r"[^\w\s]", "", text)
-        
-#         # Remove numbers/digits
-#         text = re.sub(r'\b[0-9]+\b\s*', '', text)
-        
-#         # Remove punctuation
-#         text = ''.join([char for char in text if char not in string.punctuation])
-        
-#         # Tokenize the text
-#         tokens = word_tokenize(text)
-        
-#         # Remove stop words
-#         stop_words = set(stopwords.words('english'))
-#         tokens = [token for token in tokens if token not in stop_words]
-        
-#         # Lemmatize the words
-#         lemmatizer = WordNetLemmatizer()
-#         tokens = [lemmatizer.lemmatize(token) for token in tokens]
-        
-#         # Join tokens back into a single string
-#         return ' '.join(tokens)
-
-#     # calculate sentiment scoring
-#     def sentiment_score(text, model, tokenizer, label_mapping={1: 'Negative', 2: 'Neutral', 3: 'Positive'}):
-#         try:
-#             # Tokenize the input text
-#             tokens = tokenizer.encode(text, return_tensors='pt')
-    
-#             # Get model predictions
-#             with torch.no_grad():
-#                 result = model(tokens)
-    
-#             # Obtain predicted class index
-#             predicted_index = torch.argmax(result.logits).item()
-    
-#             # Map scores to labels
-#             if label_mapping is not None:
-#                 predicted_label = label_mapping.get(predicted_index + 1, f'Class {predicted_index + 1}')
-    
-#             # Calculate confidence percentage
-#             probabilities = softmax(result.logits, dim=1)
-#             confidence_percentage = str(probabilities[0, predicted_index].item() * 100) + '%'
-    
-#             # Return results
-#             return {
-#                 'predicted_label': predicted_label,
-#                 'predicted_index': predicted_index + 1,
-#                 'confidence_percentage': confidence_percentage
-#             }
-    
-#         except Exception as e:
-#             return {
-#                 'error': str(e)
-#             }
-
-#     # model name
-#     model_name = 'cardiffnlp/twitter-roberta-base-sentiment-latest'
-#     # load directory of saved model
-#     save_directory = r"C:\Users\user\Desktop\MACHINE LEARNING\Sentiment Analysis\New folder"
-#     # load model from the local directory
-#     tokenizer = AutoTokenizer.from_pretrained(save_directory)
-#     model = AutoModelForSequenceClassification.from_pretrained(save_directory)
-
-    # st.title('Sentiment Analysis')
-    # df['message'] = df['message'].astype('str')
-    # # Apply sentiment analysis to the entire 'df['message']' column
-    # df['processed_message'] = df['message'].apply(preprocess_text)
-    # df['sentiment_results'] = df['processed_message'].apply(lambda x: sentiment_score(x, model, tokenizer))
-        
-    # # Display sentiment analysis results in a DataFrame
-    # st.title('Sentiment Analysis Results')
-    # st.write(df[['message', 'sentiment_results']])
-        
-    # # Breakdown of sentiments
-    # sentiment_counts = df['sentiment_results'].apply(lambda x: x.get('predicted_label')).value_counts()
-    # st.subheader('Sentiment Breakdown:')
-    # st.write(sentiment_counts)
 
 except NameError:
     st.error('Unable to load the Stats. Please Upload a WhatsApp Chats .txt file.')
