@@ -168,9 +168,6 @@ warnings.filterwarnings(action='ignore')
 # video_url = "demo.gif" 
 # st.image(video_url)
 
-import streamlit as st
-import base64
-
 # Create a Streamlit app
 st.set_page_config(
     page_title="Raqib's WhatsApp Chats Analyzer",
@@ -192,7 +189,6 @@ st.markdown(
 
         /* Header */
         .main-header {
-            background-color: #007bff;
             color: white;
             padding: 20px;
             text-align: center;
@@ -245,7 +241,6 @@ st.markdown(
 
         /* Expander header */
         .stExpanderHeader {
-            background-color: #007bff;
             color: white;
             padding: 10px 15px;
             font-weight: bold;
@@ -820,7 +815,7 @@ st.markdown(
             justify-content: center;
             align-items: center;
             padding: 25px; /* More padding for a comfortable feel */
-            background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
+            # background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
             color: #DCF8C6; /* Lighter green for the text, matching WhatsApp bubbles */
             font-size: 18px;
             border-radius: 15px; 
