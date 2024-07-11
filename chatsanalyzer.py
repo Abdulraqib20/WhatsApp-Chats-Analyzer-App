@@ -23,16 +23,6 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.probability import FreqDist
 
-# # Sentiment Analysis
-# from transformers import AutoTokenizer, AutoModelForSequenceClassification
-# import torch.nn.functional as F
-# from torch.nn.functional import softmax
-# import torch
-# from sklearn.model_selection import train_test_split
-# import requests
-# from bs4 import BeautifulSoup
-# import string
-
 import warnings
 warnings.filterwarnings(action='ignore')
 
@@ -51,7 +41,6 @@ st.markdown(
     """
     <style>
         .main-header {
-            background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
             color: white; /* White text for the header */
             padding: 5px; /* Increased padding for more space */
             text-align: center;
