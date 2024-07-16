@@ -290,18 +290,18 @@ custom_html = f"""
     .demo-container {{
         font-family: 'Poppins', sans-serif;
         max-width: 600px;
-        margin: 20px auto;
+        margin: 10px auto;  /* Reduced from 20px to 10px */
         text-align: center;
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        padding: 20px;
+        padding: 15px;  /* Reduced from 20px to 15px */
         border-radius: 15px;
         box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
     }}
 
     .demo-title {{
         color: #075e54;
-        font-size: 24px;
-        margin-bottom: 15px;
+        font-size: 22px;  /* Slightly reduced from 24px */
+        margin-bottom: 10px;
     }}
 
     .demo-caption {{
@@ -313,7 +313,8 @@ custom_html = f"""
     .demo-gif {{
         width: 100%;
         max-width: 400px;
-        border-radius: 10px;
+        border-radius: 14px;
+        margin-bottom: 15px;
         cursor: pointer;
         transition: transform 0.3s ease;
     }}
