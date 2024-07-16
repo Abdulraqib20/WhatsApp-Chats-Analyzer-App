@@ -10,7 +10,7 @@ protobuf>=3.19.4,<4
 streamlit==1.36.0
 plotly==5.16.1
 tenacity==8.2.3
-packaging==21.3
+packaging>=23.2, <25
 wordcloud==1.8.2.2
 Pillow==9.3.0
 emoji==2.1.0
