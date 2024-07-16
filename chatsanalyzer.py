@@ -1146,17 +1146,17 @@ except NameError:
 st.markdown(
     """
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600&display=swap');
 
-        .footer-wrapper {
-            font-family: 'Poppins', sans-serif;
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            padding: 20px 0;
-            background: linear-gradient(135deg, #25D366, #128C7E);
+        .footer-container {
+            font-family: 'Raleway', sans-serif;
+            margin-top: 50px;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #075E54, #128C7E);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            position: relative;
         }
 
         .footer-content {
@@ -1164,12 +1164,12 @@ st.markdown(
             justify-content: center;
             align-items: center;
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
 
         .footer-text {
             color: #ffffff;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 300;
             text-align: center;
             margin: 0;
@@ -1178,96 +1178,54 @@ st.markdown(
         }
 
         .footer-link {
-            color: #ffffff;
+            color: #DCF8C6;
             font-weight: 600;
             text-decoration: none;
             position: relative;
             transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
         }
 
         .footer-link:hover {
-            text-shadow: 0 0 10px rgba(255,255,255,0.8);
-        }
-
-        .footer-link::before {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #ffffff;
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.3s ease;
-        }
-
-        .footer-link:hover::before {
-            transform: scaleX(1);
-            transform-origin: left;
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
         .footer-heart {
             display: inline-block;
-            color: #ff4b4b;
+            color: #ff7e7e;
             font-size: 24px;
-            animation: heartbeat 1.5s ease-in-out infinite;
+            animation: pulse 1.5s ease infinite;
         }
 
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
+        @keyframes pulse {
+            0% { transform: scale(1); }
             50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
-        .footer-bubble {
+        .footer-wave {
             position: absolute;
-            background-color: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: float 4s ease-in-out infinite;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
         }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
     </style>
 
-    <div class="footer-wrapper">
+    <div class="footer-container">
         <div class="footer-content">
             <p class="footer-text">
-                Made with <span class="footer-heart">❤</span> by 
+                Crafted with <span class="footer-heart">♥</span> by 
                 <a href="https://github.com/Abdulraqib20" target="_blank" class="footer-link">raqibcodes</a>
             </p>
         </div>
+        <div class="footer-wave"></div>
     </div>
-
-    <script>
-        function createBubble() {
-            const footer = document.querySelector('.footer-wrapper');
-            const bubble = document.createElement('div');
-            bubble.classList.add('footer-bubble');
-            
-            const size = Math.random() * 60 + 10;
-            bubble.style.width = `${size}px`;
-            bubble.style.height = `${size}px`;
-            
-            bubble.style.left = `${Math.random() * 100}%`;
-            bubble.style.top = `${Math.random() * 100}%`;
-            
-            const duration = Math.random() * 2 + 2;
-            bubble.style.animationDuration = `${duration}s`;
-            
-            footer.appendChild(bubble);
-            
-            setTimeout(() => {
-                footer.removeChild(bubble);
-            }, duration * 1000);
-        }
-
-        setInterval(createBubble, 300);
-    </script>
     """,
     unsafe_allow_html=True
 )
