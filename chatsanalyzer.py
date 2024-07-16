@@ -1155,7 +1155,7 @@ st.markdown(
             padding: 30px 0;
             background-color: #25D366;  /* WhatsApp green */
             width: 100vw;
-            # position: relative;
+            position: absolute;
             left: 50%;
             right: 50%;
             margin-left: -50vw;
