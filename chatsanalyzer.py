@@ -112,6 +112,73 @@ st.markdown(
 )
 
 
+# Custom CSS for styling and animations
+st.markdown(
+    """
+    <style>
+    /* Centering the tabs */
+    .stTabs {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+    }
+
+    .stTabs .stTab {
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        border-radius: 10px;
+        color: white;
+        font-weight: bold;
+        margin: 5px;
+        padding: 10px 20px;
+        transition: transform 0.2s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .stTabs .stTab:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+    }
+
+    /* Header styling */
+    h1 {
+        text-align: center;
+        color: #333;
+        font-family: 'Trebuchet MS', sans-serif;
+        margin-bottom: 20px;
+    }
+
+    /* Custom animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .fade-in {
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    /* Custom scroll bar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # Create tabs for different sections
 tab1, tab2 = st.tabs(["How To Use", "About"])
 
@@ -135,7 +202,7 @@ with tab1:
         
         5. **Share**: Found something interesting? Share your insights with friends!
         """
-    )
+    ).add_class("fade-in")
 
 # Content for "About" tab
 with tab2:
@@ -154,11 +221,11 @@ with tab2:
         
         This tool is designed to provide a fun and insightful look into your WhatsApp conversations while maintaining your privacy. No data is stored or shared.
         
-        For more projects and information, visit [My GitHub Repo](https://github.com/raqibcodes).
+        For more projects and information, visit [My GitHub Repo](https://github.com/Abdulraqib20).
         
         Enjoy analyzing your chats!
         """
-    )
+    ).add_class("fade-in")
 
 # --- Display a GIF image with a caption ---
 st.title(" ")
