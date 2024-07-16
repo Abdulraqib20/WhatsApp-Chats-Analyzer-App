@@ -1198,7 +1198,7 @@ st.markdown(
         .footer-heart {
             display: inline-block;
             color: #FF0000;  /* Red heart */
-            font-size: 30px;
+            font-size: 35px;
             animation: pulse 1.5s ease infinite;
         }
 
