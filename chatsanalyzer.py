@@ -1152,11 +1152,14 @@ st.markdown(
             font-family: 'Raleway', sans-serif;
             margin-top: 50px;
             padding: 30px 0;
-            background: linear-gradient(135deg, #075E54, #128C7E);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            background-color: #25D366;  /* WhatsApp green */
+            width: 100vw;
             position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            overflow: hidden;
         }
 
         .footer-content {
@@ -1178,7 +1181,7 @@ st.markdown(
         }
 
         .footer-link {
-            color: #DCF8C6;
+            color: #075E54;  /* WhatsApp dark green */
             font-weight: 600;
             text-decoration: none;
             position: relative;
@@ -1188,14 +1191,14 @@ st.markdown(
         }
 
         .footer-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            background-color: rgba(7, 94, 84, 0.1);  /* Slightly darker on hover */
+            box-shadow: 0 0 15px rgba(7, 94, 84, 0.2);
         }
 
         .footer-heart {
             display: inline-block;
-            color: #ff7e7e;
-            font-size: 24px;
+            color: #FF0000;  /* Red heart */
+            font-size: 30px;
             animation: pulse 1.5s ease infinite;
         }
 
@@ -1203,17 +1206,6 @@ st.markdown(
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
-        }
-
-        .footer-wave {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: cover;
-            background-repeat: no-repeat;
         }
     </style>
 
@@ -1224,7 +1216,6 @@ st.markdown(
                 <a href="https://github.com/Abdulraqib20" target="_blank" class="footer-link">raqibcodes</a>
             </p>
         </div>
-        <div class="footer-wave"></div>
     </div>
     """,
     unsafe_allow_html=True
