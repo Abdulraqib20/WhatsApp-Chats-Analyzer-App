@@ -390,7 +390,7 @@ custom_html = f"""
 </script>
 """
 # Render the custom HTML
-components.html(custom_html, height=100)
+components.html(custom_html, height=400)
 
 
 
