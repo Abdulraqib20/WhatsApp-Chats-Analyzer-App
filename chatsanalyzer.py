@@ -112,16 +112,16 @@ st.markdown(
 )
 
 
-# Create checkboxes for each tab
-show_how_to_use = st.checkbox("How To Use")
-show_about = st.checkbox("About")
+# Create tabs for different sections
+tab1, tab2 = st.tabs(["How To Use", "About"])
 
 # Content for "How To Use" tab
-if show_how_to_use:
+with tab1:
     st.header("How To Use")
     st.write(
         """
         This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes).
+        It's not just a utility; it's an exciting journey through your messages. Enjoy exploring your chat data!
         
         Here's how to get started:
         
@@ -134,19 +134,15 @@ if show_how_to_use:
         4. **Interact**: Many charts are interactive. Hover over data points for more details or use zoom features where available.
         
         5. **Share**: Found something interesting? Share your insights with friends!
-        
-        Dive into your chats, uncover valuable insights, and gain a deeper understanding of your messaging history. Whether you're curious about your most active group members, peak conversation times, or other fascinating stats, this tool has got you covered.
-        
-        It's not just a utility; it's an exciting journey through your messages. Enjoy exploring your chat data!
         """
     )
 
 # Content for "About" tab
-if show_about:
+with tab2:
     st.header("About")
     st.write(
         """
-        WhatsApp Chat Analyzer is a project developed by Raqib (raqibcodes). 
+        The app has a lot of features which includes the following: 
         
         **Key Features**:
         - Analyze individual and group chats
@@ -154,10 +150,11 @@ if show_about:
         - Identify most active users in group chats
         - Discover peak activity times
         - Explore word usage and emoji trends
+        - Unleash the Power of Generative AI to chat with your own chats
         
         This tool is designed to provide a fun and insightful look into your WhatsApp conversations while maintaining your privacy. No data is stored or shared.
         
-        For more projects and information, visit [raqib's GitHub](https://github.com/raqibcodes).
+        For more projects and information, visit [My GitHub Repo](https://github.com/raqibcodes).
         
         Enjoy analyzing your chats!
         """
