@@ -158,7 +158,7 @@ custom_html = """
     left: 0;
     width: 100%;
     height: 3px;
-    background-color: #3498db;
+    background-color: #25D366;  /* Standard WhatsApp green color */
     transform: scaleX(0);
     transition: transform 0.3s ease;
 }
@@ -243,9 +243,6 @@ custom_html = """
         <p>
             Your privacy is a top priority. No data is stored or shared. It's just you and your insights!
         </p>
-        <p>
-            Ready to unlock the secrets of your chats? Let's dive in and let the fun begin! 🎉
-        </p>
     </div>
 </div>
 
@@ -277,10 +274,118 @@ components.html(custom_html, height=600)
 
 
 # --- Display a GIF image with a caption ---
-st.title(" ")
-st.caption("Demo on how to export WhatsApp chats to a Text (.txt) File")
-video_url = "demo.gif" 
-st.image(video_url)
+gif_url = "demo.gif"
+
+custom_html = f"""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+    .demo-container {{
+        font-family: 'Poppins', sans-serif;
+        max-width: 600px;
+        margin: 20px auto;
+        text-align: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    }}
+
+    .demo-title {{
+        color: #075e54;
+        font-size: 24px;
+        margin-bottom: 15px;
+    }}
+
+    .demo-caption {{
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }}
+
+    .demo-gif {{
+        width: 100%;
+        max-width: 400px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }}
+
+    .demo-gif:hover {{
+        transform: scale(1.05);
+    }}
+
+    .modal {{
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.9);
+    }}
+
+    .modal-content {{
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+    }}
+
+    .close {{
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }}
+
+    .close:hover,
+    .close:focus {{
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }}
+</style>
+
+<div class="demo-container">
+    <h2 class="demo-title">How to Export WhatsApp Chats</h2>
+    <p class="demo-caption">Click the GIF below to see a full-size demo on exporting WhatsApp chats to a Text (.txt) file</p>
+    <img src="{gif_url}" alt="WhatsApp Export Demo" class="demo-gif" onclick="openModal()">
+</div>
+
+<div id="myModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="img01">
+</div>
+
+<script>
+    var modal = document.getElementById("myModal");
+    var img = document.querySelector(".demo-gif");
+    var modalImg = document.getElementById("img01");
+
+    function openModal() {{
+        modal.style.display = "block";
+        modalImg.src = img.src;
+    }}
+
+    function closeModal() {{
+        modal.style.display = "none";
+    }}
+
+    window.onclick = function(event) {{
+        if (event.target == modal) {{
+            closeModal();
+        }}
+    }}
+</script>
+"""
+# Render the custom HTML
+components.html(custom_html, height=600)
+
 
 
 def date_time(s):
