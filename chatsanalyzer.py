@@ -1,5 +1,6 @@
 # Import libraries and packages
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import base64
@@ -112,53 +113,165 @@ st.markdown(
 )
 
 
+
+
 # Create tabs for different sections
-tab1, tab2 = st.tabs(["How To Use", "About"])
+# Custom HTML, CSS, and JavaScript for animated tabs
+custom_html = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
-# Content for "How To Use" tab
-with tab1:
-    st.header("How To Use")
-    st.write(
-        """
-        This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes).
-        It's not just a utility; it's an exciting journey through your messages. Enjoy exploring your chat data!
-        
-        Here's how to get started:
-        
-        1. **Export Your Chat**: Open WhatsApp, go to the chat you want to analyze, and export it without media.
-        
-        2. **Upload the File**: Use the file uploader on the left sidebar to upload your exported chat file.
-        
-        3. **Explore Insights**: Once uploaded, navigate through the various tabs to see different analyses and visualizations.
-        
-        4. **Interact**: Many charts are interactive. Hover over data points for more details or use zoom features where available.
-        
-        5. **Share**: Found something interesting? Share your insights with friends!
-        """
-    )
+.tabs-container {
+    font-family: 'Poppins', sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
 
-# Content for "About" tab
-with tab2:
-    st.header("About")
-    st.write(
-        """
-        The app has a lot of features which includes the following: 
-        
-        **Key Features**:
-        - Analyze individual and group chats
-        - Visualize message frequency over time
-        - Identify most active users in group chats
-        - Discover peak activity times
-        - Explore word usage and emoji trends
-        - Unleash the Power of Generative AI to chat with your own chats
-        
-        This tool is designed to provide a fun and insightful look into your WhatsApp conversations while maintaining your privacy. No data is stored or shared.
-        
-        For more projects and information, visit [My GitHub Repo](https://github.com/Abdulraqib20).
-        
-        Enjoy analyzing your chats!
-        """
-    )
+.tab-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #3498db;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.tab-button:hover::after,
+.tab-button.active::after {
+    transform: scaleX(1);
+}
+
+.tab-content {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.5s ease;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.tab-content.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.feature-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.feature-list li {
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.feature-list li::before {
+    content: '🚀';
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+</style>
+
+<div class="tabs-container">
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="showTab('how-to-use')">How To Use</button>
+        <button class="tab-button" onclick="showTab('about')">About</button>
+    </div>
+    
+    <div id="how-to-use" class="tab-content active">
+        <h2>How To Use</h2>
+        <p>
+            Welcome to our WhatsApp Chat Analyzer, an exciting journey through your messages! Here's your guide to unlocking insights:
+        </p>
+        <ol>
+            <li><strong>Export Your Chat:</strong> In WhatsApp, select the chat you want to analyze and export it (without media).</li>
+            <li><strong>Upload:</strong> Use the sidebar uploader to bring your chat file into our magical analyzer.</li>
+            <li><strong>Explore:</strong> Dive into various tabs filled with fascinating analyses and visualizations.</li>
+            <li><strong>Interact:</strong> Many charts are your playground - hover, zoom, and discover hidden stories!</li>
+            <li><strong>AI Chat:</strong> Use our Generative AI feature to have a conversation with your own chat history!</li>
+            <li><strong>Share:</strong> Found a gem? Share your discoveries with friends and spark interesting conversations!</li>
+        </ol>
+    </div>
+    
+    <div id="about" class="tab-content">
+        <h2>About</h2>
+        <p>
+            Embark on a data-driven adventure with our WhatsApp Chat Analyzer! Uncover the hidden patterns in your conversations and gain fascinating insights.
+        </p>
+        <h3>✨ Magical Features:</h3>
+        <ul class="feature-list">
+            <li>Analyze individual chats or group dynamics</li>
+            <li>Visualize message frequency with stunning charts</li>
+            <li>Identify chat champions in your groups</li>
+            <li>Discover prime-time chatting hours</li>
+            <li>Explore your vocabulary and emoji game</li>
+            <li>Chat with AI about your own conversations!</li>
+        </ul>
+        <p>
+            Your privacy is our top priority. No data is stored or shared. It's just you and your insights!
+        </p>
+        <p>
+            Ready to unlock the secrets of your chats? Let's dive in and let the fun begin! 🎉
+        </p>
+    </div>
+</div>
+
+<script>
+function showTab(tabId) {
+    // Hide all tab contents
+    var tabContents = document.getElementsByClassName('tab-content');
+    for (var i = 0; i < tabContents.length; i++) {
+        tabContents[i].classList.remove('active');
+    }
+    
+    // Show the selected tab content
+    document.getElementById(tabId).classList.add('active');
+    
+    // Update active state of tab buttons
+    var tabButtons = document.getElementsByClassName('tab-button');
+    for (var i = 0; i < tabButtons.length; i++) {
+        tabButtons[i].classList.remove('active');
+    }
+    event.currentTarget.classList.add('active');
+}
+</script>
+"""
+
+# Render the custom HTML
+components.html(custom_html, height=600)
+
+
+
 
 # --- Display a GIF image with a caption ---
 st.title(" ")
