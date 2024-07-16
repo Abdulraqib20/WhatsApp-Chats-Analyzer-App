@@ -393,6 +393,7 @@ custom_html = f"""
 # Render the custom HTML
 components.html(custom_html, height=400)
 
+##--------------------------------------------------------------------------------------------------------------------##
 
 
 def date_time(s):
@@ -1154,12 +1155,12 @@ st.markdown(
             padding: 30px 0;
             background-color: #25D366;  /* WhatsApp green */
             width: 100vw;
-            position: relative;
+            # position: relative;
             left: 50%;
             right: 50%;
             margin-left: -50vw;
             margin-right: -50vw;
-            overflow: hidden;
+            # overflow: hidden;
         }
 
         .footer-content {
