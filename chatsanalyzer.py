@@ -7,6 +7,7 @@ import base64
 import os
 import re
 import emoji
+from pathlib import Path
 import warnings;warnings.filterwarnings(action='ignore')
 
 
@@ -272,9 +273,15 @@ components.html(custom_html, height=600)
 
 
 
+##-----------------------------------------Display a GIF image with a caption--------------------------------------##
+# Get the current directory
+current_dir = Path(__file__).parent if "__file__" in locals() else Path.cwd()
 
-# --- Display a GIF image with a caption ---
-gif_url = "demo.gif"
+# Construct the path to the GIF file
+gif_path = current_dir / "demo.gif"
+
+# Read the GIF file
+gif_bytes = gif_path.read_bytes()
 
 custom_html = f"""
 <style>
@@ -354,8 +361,7 @@ custom_html = f"""
 <div class="demo-container">
     <h2 class="demo-title">How to Export WhatsApp Chats</h2>
     <p class="demo-caption">Click the GIF below to see a full-size demo on exporting WhatsApp chats to a Text (.txt) file</p>
-    <img src="{gif_url}" alt="WhatsApp Export Demo" class="demo-gif" onclick="openModal()">
-</div>
+    <img src="data:image/gif;base64,{{st.base64.b64encode(gif_bytes).decode()}}" alt="WhatsApp Export Demo" class="demo-gif" onclick="openModal()">
 
 <div id="myModal" class="modal">
     <span class="close" onclick="closeModal()">&times;</span>
@@ -384,7 +390,7 @@ custom_html = f"""
 </script>
 """
 # Render the custom HTML
-components.html(custom_html, height=600)
+components.html(custom_html, height=100)
 
 
 
