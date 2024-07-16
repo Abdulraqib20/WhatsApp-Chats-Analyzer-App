@@ -4,8 +4,6 @@ from langchain_community.document_loaders.csv_loader import CSVLoader
 # from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_huggingface import HuggingFaceEmbeddings
 import os
-from io import StringIO
-import pandas as pd
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from dotenv import load_dotenv
