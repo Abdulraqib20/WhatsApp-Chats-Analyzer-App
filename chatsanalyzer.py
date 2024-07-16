@@ -185,8 +185,9 @@ tab1, tab2 = st.tabs(["How To Use", "About"])
 # Content for "How To Use" tab
 with tab1:
     st.header("How To Use")
-    st.write(
+    st.markdown(
         """
+        <div class="fade-in">
         This Application is a simple and easy-to-use WhatsApp Chats Analysis tool, thoughtfully designed and developed by Raqib (raqibcodes).
         It's not just a utility; it's an exciting journey through your messages. Enjoy exploring your chat data!
         
@@ -201,14 +202,17 @@ with tab1:
         4. **Interact**: Many charts are interactive. Hover over data points for more details or use zoom features where available.
         
         5. **Share**: Found something interesting? Share your insights with friends!
-        """
-    ).add_class("fade-in")
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Content for "About" tab
 with tab2:
     st.header("About")
-    st.write(
+    st.markdown(
         """
+        <div class="fade-in">
         The app has a lot of features which includes the following: 
         
         **Key Features**:
@@ -221,11 +225,14 @@ with tab2:
         
         This tool is designed to provide a fun and insightful look into your WhatsApp conversations while maintaining your privacy. No data is stored or shared.
         
-        For more projects and information, visit [My GitHub Repo](https://github.com/Abdulraqib20).
+        For more projects and information, visit [My GitHub Repo](github.com/Abdulraqib20).
         
         Enjoy analyzing your chats!
-        """
-    ).add_class("fade-in")
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
 # --- Display a GIF image with a caption ---
 st.title(" ")
