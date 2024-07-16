@@ -529,11 +529,13 @@ try:
         from langchain_core.prompts import (
         HumanMessagePromptTemplate, MessagesPlaceholder, SystemMessagePromptTemplate
         )
-        from langchain_core.messages import HumanMessage, AIMessage
+        from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
         from langchain_groq.chat_models import ChatGroq
         from langchain_core.exceptions import LangChainException
         from langchain.tools import StructuredTool
+        from langchain_core.utils.function_calling import convert_to_openai_function
         import os
+        from io import BytesIO
         from rag_pine import RetrievalAugmentGeneration
         
         from dotenv import load_dotenv
@@ -563,13 +565,22 @@ try:
 
 
 
-        def process_chat(model, user_input, chat_history):
-            return model.invoke({
-            'chat_history' : chat_history,
-            'input' : user_input
-            }
-            )
+        # def process_chat(model, user_input, chat_history):
+        #     return model.invoke({
+        #     'chat_history' : chat_history,
+        #     'input' : user_input
+        #     }
+        #     )
 
+        def process_chat(model,user_input,chat_history):
+
+            response = model.invoke(
+                {
+                    'chat_history' : chat_history,
+                    'input' : user_input
+                }
+            )
+            return response
 
 
 
@@ -722,18 +733,23 @@ try:
             Input schema for analyzing WhatsApp chats from a CSV file.
             """
             query: str = Field(..., description='Query about the WhatsApp Chats')
+        
+        #/// CONVERTING TO FUNCTION DECLARATION OBJECT
+        whatsapp_chats_func = convert_to_openai_function(WhatsAppChatsInput)
+        
+        
 
-        # Create the function for RAG
-        def whatsapp_chats_analysis(query: str) -> str:
-            """Analyze WhatsApp chats based on the given query."""
-            return rag_class.retriever(query)
+        # # Create the function for RAG
+        # def whatsapp_chats_analysis(query: str) -> str:
+        #     """Analyze WhatsApp chats based on the given query."""
+        #     return rag_class.retriever(query)
 
-        # create Structured Tool for function calling
-        whatsapp_tool = StructuredTool.from_function(
-            func=whatsapp_chats_analysis,
-            name="WhatsAppChatsAnalysis",
-            description="Analyze Whatsapp chats based on the given query"
-            )
+        # # create Structured Tool for function calling
+        # whatsapp_tool = StructuredTool.from_function(
+        #     func=whatsapp_chats_analysis,
+        #     name="WhatsAppChatsAnalysis",
+        #     description="Analyze Whatsapp chats based on the given query"
+        #     )
 
         #  CREATE CHAT TEMPLATE
         system_prompt = """
@@ -788,106 +804,111 @@ try:
             enhancing the user's understanding of the group's communication dynamics.
             """
 
+        # prompt = ChatPromptTemplate.from_messages([
+        #         SystemMessagePromptTemplate.from_template(system_prompt),
+        #         MessagesPlaceholder(variable_name='chat_history'),
+        #         HumanMessagePromptTemplate.from_template("{input}")
+        # ])
+        
         prompt = ChatPromptTemplate.from_messages([
-                SystemMessagePromptTemplate.from_template(system_prompt),
-                MessagesPlaceholder(variable_name='chat_history'),
-                HumanMessagePromptTemplate.from_template("{input}")
+            ('system' , system_prompt),
+            MessagesPlaceholder(variable_name="chat_history"),
+            HumanMessagePromptTemplate.from_template('{input}')
         ])
 
-        llm = ChatGroq(
+        chat_model = ChatGroq(
             groq_api_key=GROQ_API_KEY, 
             model_name=MODEL_NAME, 
             temperature=0,
             max_retries=5
         )
+        
+        chat_with_tools = chat_model.bind_tools(tools=[whatsapp_chats_func]) 
+        chain =  prompt | chat_with_tools
+        
+        
+        if 'chat_history' not in st.session_state:
+            st.session_state.chat_history = [] 
 
-        # Convert to function declaration object
-        # whatsapp_chats_func = convert_to_openai_function(WhatsAppChatsInput)
-        chat_with_tools = llm.bind_tools(tools=[whatsapp_tool])
-        chain = prompt | chat_with_tools
-        
-        
-        
         if "messages" not in st.session_state:
             st.session_state.messages = []
-        if "chat_history" not in st.session_state:
-            st.session_state.chat_history = []
+
 
         for message in st.session_state.messages:
             with st.chat_message(message["role"], avatar="🧑‍💻" if message["role"] == "user" else "🤖"):
                 st.markdown(message["content"])
 
-        user_input = st.chat_input('How can I help you with analyzing your WhatsApp Chats?', key='User_input')
-
-        if user_input:
+        if user_input := st.chat_input('How can I help you with analyzing your WhatsApp Chats?', key='user_input'):
             st.session_state.messages.append({"role": "user", "content": user_input})
             with st.chat_message("user", avatar="🧑‍💻"):
                 st.markdown(user_input)
 
-        with st.chat_message('assistant', avatar="🤖"):
-            response = process_chat(chain, user_input, st.session_state.chat_history)
-            # st.session_state.chat_history.append(HumanMessage(content=user_input))
-            st.session_state.chat_history.append(response.content)
-            print(f"Response: {response}, '\n")
-            print(f"Response Additional Kwargs: {response.additional_kwargs}, '\n")
+            with st.chat_message('assistant', avatar="🤖"):
 
-            if response.content:
-                st.markdown(response.content)
-                st.session_state.messages.append({"role": "assistant", "content": response.content})
-            else:
-                st.info("The AI is processing your prompt...")
+                response = process_chat(chain,user_input,st.session_state.chat_history)
+                st.session_state.chat_history.append(HumanMessage(content=user_input))
+                st.session_state.chat_history.append(response)
 
-            try:
-                params = {}
-                # Extracting information
-                tool_calls = response.additional_kwargs.get('tool_calls', [])
-                if not tool_calls:
-                    st.warning("No tool calls were found in the response.")
+                print(f"Response: {response}, '\n")
+                print(f"Response Additional Kwargs: {response.additional_kwargs}, '\n")
+                
+                if response.content != '' : 
+                    st.markdown(response.content)
+                    st.session_state.messages.append({"role": "assistant", "content": response.content})
+
+                if response.content == '':
+                    api_requests_and_responses = []
+                    backend_details = ''
                     
-                
-                for call in tool_calls:
-                    function = call.get('function', {})
-                    function_id = call.get('id')
-                    function_name = function.get('name')
-                    function_args = json.loads(function.get('arguments', '{}'))
-
-                    if not function_name:
-                        st.warning(f"Function name not found in tool call: {call}")
-                        continue
+                    try:
+                        params = {}
+                        # Extracting information
+                        tool_calls = response.additional_kwargs.get('tool_calls', [])
+                        for call in tool_calls:
+                            function_id = call.get('id')
+                            function = call.get('function', {})
+                            function_name = function.get('name')
+                            function_arg = json.loads(function.get('arguments'))
                     
-                    print(f"Function Name: {function_name}, '\n")
-                    print(f"Function Arguments: {function_args}, '\n")
+                        print(function_name)
+                        print(function_arg)
+                        #  EXTRACT THE PARAMETERS TO BE PASSED TO THE FUNCTIONS
+                        for key,value in function_arg.items():
+                            params[key] = value
+                            print(function_name)
+                            print(params)
+                            print(params[key])
+                        # PERFORMS THE FUNCTION CALL OUTSIDE THE LLM MODEL
+                        if function_name == 'WhatsAppChatsInput':
+                            with st.status('Analyzing your WhatsApp Chats', expanded=True) as status:
+                                api_response = rag_class.retriever(params[key])
+                                status.update(label='Analysis Complete', state='complete', expanded=False)
+                            
+            
+                        # PARSE THE RESPONSE OF THE API CALLS BACK INTO THE MODEL
+                        for k, v in api_response.items(): # check is reponse contains bytes object
+                            if isinstance(v, BytesIO):
+                                
+                                # image = display_image(v)
+                                # st.image(image=image,width=200)
+                                response = process_chat(chain, 
+                                                        ToolMessage(content=k, name=function_name, tool_call_id=function_id),
+                                                        st.session_state.chat_history)
+                                print('======================================')
+                                print(response)
+                                st.markdown(response.content)
+                        
+                        
+                        # APPEND THE FUNCTION RESPONSE AND AI RESPONSE TO BOTH THE CHAT_HISTORY AND MESSAGE HISTORY FOR STREAMLIT  
+                        st.session_state.chat_history.append(ToolMessage(
+                            content=k, name=function_name, tool_call_id=function_id)) # append tool response
+                        
+                        st.session_state.chat_history.append(response)
+                        st.session_state.messages.append({"role": "assistant", "content": response.content})
+                        
                     
-                #  EXTRACT THE PARAMETERS TO BE PASSED TO THE FUNCTIONS
-                for key, value in function_args.items():
-                    params[key] = value
-                print(f"Params: {params}, '\n")
-                
-                # PERFORMS THE FUNCTION CALL OUTSIDE THE LLM MODEL
-                if function_name == 'WhatsAppChatsAnalysis':
-                    with st.status('Analyzing your WhatsApp Chats', expanded=True) as status:
-                        query = function_args.get('query', '')
-                        # api_response = rag_class.retriever(params[key])
-                        analysis_result = whatsapp_chats_analysis(query)
-                        status.update(label='Analysis Complete', state='complete', expanded=False)
-                
-                    follow_up_response = process_chat(
-                        chain, 
-                        f"Here's the analysis result: {analysis_result}\nPlease provide insights based on this information.",
-                        st.session_state.chat_history
-                    )
-                
-                    st.markdown(follow_up_response.content)
-                    st.session_state.messages.append({"role": "assistant", "content": follow_up_response.content})
-                    st.session_state.chat_history.append(follow_up_response)
-                else:
-                    st.warning(f"Unknown function name: {function_name}")
-
-            except (Exception,LangChainException) as e:
-                st.error(f"An error occurred: {str(e)}")
-                print(f"Full error: {e}")
-                import traceback
-                print(traceback.format_exc())
+                    except (Exception,LangChainException) as e:
+                        print(f"An error occurred: {e}")
         
     
     

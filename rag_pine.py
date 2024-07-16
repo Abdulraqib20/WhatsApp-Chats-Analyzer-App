@@ -259,10 +259,10 @@ class RetrievalAugmentGeneration:
         response = retriever_chain.invoke(user_query)
         return {'result of search': response}
     
-    def chat(self, user_input):
-        response = self.retriever(user_input)
-        st.session_state.chat_history.append(('Human', user_input))
-        st.session_state.chat_history.append(('AI', response))
+    # def chat(self, user_input):
+    #     response = self.retriever(user_input)
+    #     st.session_state.chat_history.append(('Human', user_input))
+    #     st.session_state.chat_history.append(('AI', response))
         
-        return response
+    #     return response
 
