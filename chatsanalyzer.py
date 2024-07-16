@@ -115,7 +115,8 @@ st.markdown(
 
 
 
-# Create tabs for different sections
+##-----------------------------------------------STYLE HEADER AND ABOUT SECTIONS--------------------------------------##
+
 # Custom HTML, CSS, and JavaScript for animated tabs
 custom_html = """
 <style>
@@ -175,11 +176,13 @@ custom_html = """
     transition: all 0.5s ease;
     opacity: 0;
     transform: translateY(20px);
+    display: none;
 }
 
 .tab-content.active {
     opacity: 1;
     transform: translateY(0);
+    display: block;
 }
 
 .feature-list {
@@ -211,34 +214,34 @@ custom_html = """
     <div id="how-to-use" class="tab-content active">
         <h2>How To Use</h2>
         <p>
-            Welcome to our WhatsApp Chat Analyzer, an exciting journey through your messages! Here's your guide to unlocking insights:
+            Welcome to the WhatsApp Chats Analyzer, an exciting journey through your WhatsApp chats powered by advanced Data Analysis and AI!
+            Here's your guide to unlocking insights:
         </p>
         <ol>
-            <li><strong>Export Your Chat:</strong> In WhatsApp, select the chat you want to analyze and export it (without media).</li>
-            <li><strong>Upload:</strong> Use the sidebar uploader to bring your chat file into our magical analyzer.</li>
-            <li><strong>Explore:</strong> Dive into various tabs filled with fascinating analyses and visualizations.</li>
+            <li><strong>Export Your Chat:</strong> In WhatsApp, select the chat you want to analyze and export it (without media) TO A .txt file</li>
+            <li><strong>Upload:</strong> Use the sidebar uploader to bring your exported chats in text file format into the app.</li>
+            <li><strong>Explore:</strong> Once uploaded, navigate through the various tabs to see different analyses and interactive visualizations.</li>
             <li><strong>Interact:</strong> Many charts are your playground - hover, zoom, and discover hidden stories!</li>
-            <li><strong>AI Chat:</strong> Use our Generative AI feature to have a conversation with your own chat history!</li>
-            <li><strong>Share:</strong> Found a gem? Share your discoveries with friends and spark interesting conversations!</li>
+            <li><strong>AI Chat:</strong> Use the Generative AI feature to have a conversation with your own chat messages!</li>
         </ol>
     </div>
     
     <div id="about" class="tab-content">
         <h2>About</h2>
         <p>
-            Embark on a data-driven adventure with our WhatsApp Chat Analyzer! Uncover the hidden patterns in your conversations and gain fascinating insights.
+            The app has a lot of features which includes the following:
         </p>
         <h3>✨ Magical Features:</h3>
         <ul class="feature-list">
-            <li>Analyze individual chats or group dynamics</li>
+            <li>Analyze individual WhatsApp chats or group chats</li>
             <li>Visualize message frequency with stunning charts</li>
-            <li>Identify chat champions in your groups</li>
+            <li>Identify the most active participants in your groups</li>
             <li>Discover prime-time chatting hours</li>
             <li>Explore your vocabulary and emoji game</li>
-            <li>Chat with AI about your own conversations!</li>
+            <li>Chat with the AI about your own conversations!</li>
         </ul>
         <p>
-            Your privacy is our top priority. No data is stored or shared. It's just you and your insights!
+            Your privacy is a top priority. No data is stored or shared. It's just you and your insights!
         </p>
         <p>
             Ready to unlock the secrets of your chats? Let's dive in and let the fun begin! 🎉
