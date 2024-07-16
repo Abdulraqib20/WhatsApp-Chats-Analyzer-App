@@ -215,7 +215,7 @@ custom_html = """
     <div id="how-to-use" class="tab-content active">
         <h2>How To Use</h2>
         <p>
-            Welcome to the WhatsApp Chats Analyzer, an exciting journey through your WhatsApp chats powered by advanced Data Analysis and AI!
+            Welcome to the WhatsApp Chats Analyzer developed by RAQIBCODES, an exciting journey through your WhatsApp chats powered by advanced Data Analysis and AI!
             Here's your guide to unlocking insights:
         </p>
         <ol>
@@ -1141,65 +1141,133 @@ try:
 except NameError:
     st.error('Unable to load the Stats. Please Upload a WhatsApp Chats .txt file.')
     
-# ---footer---
+#-------------------------------------------------------------FOOTER----------------------------------------------------#
 
 st.markdown(
     """
     <style>
-        div.stMarkdown footer {  /* Target only the footer within stMarkdown */
-            display: flex; 
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        .footer-wrapper {
+            font-family: 'Poppins', sans-serif;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            overflow: hidden;
+        }
+
+        .footer-content {
+            display: flex;
             justify-content: center;
             align-items: center;
-            padding: 25px; /* More padding for a comfortable feel */
-            # background: linear-gradient(to right, #25D366, #128C7E); /* WhatsApp-like gradient */
-            color: #DCF8C6; /* Lighter green for the text, matching WhatsApp bubbles */
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-text {
+            color: #ffffff;
             font-size: 18px;
-            border-radius: 15px; 
-            margin-top: 40px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+            font-weight: 300;
+            text-align: center;
+            margin: 0;
+            padding: 0 20px;
+            position: relative;
         }
 
-        div.stMarkdown footer p {
-            margin: 0; 
-        }
-
-        div.stMarkdown footer a {
-            color: inherit; /* Inherit color from parent (footer), which is #DCF8C6 */
+        .footer-link {
+            color: #ffffff;
+            font-weight: 600;
             text-decoration: none;
-            font-weight: bold;
-            position: relative; 
-            transition: all 0.3s ease; 
+            position: relative;
+            transition: all 0.3s ease;
         }
 
-        div.stMarkdown footer a::after {
-            content: "";
+        .footer-link:hover {
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+
+        .footer-link::before {
+            content: '';
             position: absolute;
-            bottom: -4px; 
+            bottom: -2px;
             left: 0;
             width: 100%;
             height: 2px;
-            background-color: #fff; 
-            transform: scaleX(0); 
-            transform-origin: left; 
-            transition: transform 0.3s ease; 
+            background-color: #ffffff;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
         }
 
-        div.stMarkdown footer a:hover::after {
-            transform: scaleX(1); 
+        .footer-link:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
         }
 
-        div.stMarkdown footer a:hover {
-            color: #f5f5f5; 
-            letter-spacing: 1px; 
+        .footer-heart {
+            display: inline-block;
+            color: #ff4b4b;
+            font-size: 24px;
+            animation: heartbeat 1.5s ease-in-out infinite;
         }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .footer-bubble {
+            position: absolute;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
     </style>
 
-    <footer>
-        <p>
-            Made with ❤️ by&nbsp;
-            <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a>
-        </p>
-    </footer>
+    <div class="footer-wrapper">
+        <div class="footer-content">
+            <p class="footer-text">
+                Made with <span class="footer-heart">❤</span> by 
+                <a href="https://github.com/Abdulraqib20" target="_blank" class="footer-link">raqibcodes</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function createBubble() {
+            const footer = document.querySelector('.footer-wrapper');
+            const bubble = document.createElement('div');
+            bubble.classList.add('footer-bubble');
+            
+            const size = Math.random() * 60 + 10;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.top = `${Math.random() * 100}%`;
+            
+            const duration = Math.random() * 2 + 2;
+            bubble.style.animationDuration = `${duration}s`;
+            
+            footer.appendChild(bubble);
+            
+            setTimeout(() => {
+                footer.removeChild(bubble);
+            }, duration * 1000);
+        }
+
+        setInterval(createBubble, 300);
+    </script>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
