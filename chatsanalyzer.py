@@ -1153,7 +1153,6 @@ st.markdown(
             font-family: 'Raleway', sans-serif;
             margin-top: 50px;
             padding: 30px 0;
-            background-color: #25D366;  /* WhatsApp green */
             width: 100vw;
             position: absolute;
             left: 50%;
@@ -1213,7 +1212,7 @@ st.markdown(
     <div class="footer-container">
         <div class="footer-content">
             <p class="footer-text">
-                Crafted with <span class="footer-heart">♥</span> by 
+                Made with <span class="footer-heart">♥</span> by 
                 <a href="https://github.com/Abdulraqib20" target="_blank" class="footer-link">raqibcodes</a>
             </p>
         </div>
