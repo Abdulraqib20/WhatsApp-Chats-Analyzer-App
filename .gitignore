@@ -1,3 +1,4 @@
 .env
 *.csv
 .csv
+temp.csv
