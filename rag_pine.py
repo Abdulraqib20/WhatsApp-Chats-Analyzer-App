@@ -3,6 +3,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.csv_loader import CSVLoader
 # from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 import os
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
@@ -12,17 +14,32 @@ from pinecone import Pinecone
 from langchain_pinecone import PineconeVectorStore
 from langchain_community.vectorstores import Pinecone as langchain_pinecone
 from langchain.schema import StrOutputParser
-from langchain_openai import OpenAIEmbeddings
-from langchain.schema import Document
-import streamlit as st
+from langchain_community.vectorstores import Qdrant
+import qdrant_client
+import chromadb
+from chromadb.config import Settings
+from langchain_community.vectorstores import Chroma
+import streamlit as st 
 
 
 
 load_dotenv()
-GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
-PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
-GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+
+##-------------------------------------------------CLOUD----------------------------------------------------------##
+# GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+# PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
+# GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+# OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+# QDRANT_API_KEY = st.secrets["QDRANT_API_KEY"]
+# MODEL_NAME = "llama3-70b-8192"
+
+##-------------------------------------------------LOCAL----------------------------------------------------------##
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+
 MODEL_NAME = "llama3-70b-8192"
 
 def format_docs(docs):
@@ -43,6 +60,7 @@ class RetrievalAugmentGeneration:
         self.vector_store = self.create_vector_store()
 
 
+####---------------------------------------------SESSION STATE------------------------------------------------------####
     @staticmethod
     def initialize_session_state():
         if 'chat_history' not in st.session_state:
@@ -52,6 +70,7 @@ class RetrievalAugmentGeneration:
             st.session_state.messages = []
             
 
+####---------------------------------------DOCUMENT LOADER--------------------------------------------------####
     # @st.cache_resource
     # def document_loader(_self):
     #     data_path = 'processed_whatsapp_chat.csv'
@@ -78,82 +97,111 @@ class RetrievalAugmentGeneration:
         else:
             st.warning("Please upload a CSV file.")
         
-    
+
+####---------------------------------------CREATING VECTOR EMBEDDINGS------------------------------------------------####
     @st.cache_resource
-    def load_embeddings(_self):
+    
+    ####---------------------------------------HuggingFace Embeddings------------------------------------------------####
+    def load_embeddings(_self, _embedding_type="huggingface"):
         try:
-            return HuggingFaceEmbeddings(
-                model_name="sentence-transformers/all-MiniLM-L6-v2",
-                model_kwargs={'device': 'cpu'},
-                encode_kwargs={'normalize_embeddings': False}
-            )
+            if _embedding_type == "huggingface":
+                return HuggingFaceEmbeddings(
+                    model_name="sentence-transformers/all-mpnet-base-v2",
+                    model_kwargs={'device': 'cpu'},
+                    encode_kwargs={'normalize_embeddings': False}
+                )
+            ####-----------------------------OpenAI Embeddings----------------------------------#### 
+            elif _embedding_type == "openai":
+                return OpenAIEmbeddings(
+                    api_key=OPENAI_API_KEY,
+                    model="text-embedding-ada-002",
+                    max_retries=3
+                )
+            ####-----------------------------GoogleGenAI Embeddings----------------------------------#### 
+            elif _embedding_type == "google":
+                return GoogleGenerativeAIEmbeddings(
+                    model='models/embedding-001',
+                    task_type='retrieval_query',
+                    google_api_key=GEMINI_API_KEY
+                )
+            else:
+                raise ValueError("Unsupported embedding type selected")
         except Exception as e:
             st.error(f"Error loading embeddings: {str(e)}")
             return None
-        
-    # @st.cache_resource
-    # def load_embeddings(_self):
-    #     try:
-    #         return OpenAIEmbeddings(
-    #             api_key=OPENAI_API_KEY,
-    #             model="text-embedding-3-small",
-    #             max_retries=3,
-    #             dimensions=1536
-    #         )
-    #     except Exception as e:
-    #         st.error(f"Error loading embeddings: {str(e)}")
-    #         return None
-    
-    
+ 
+ ####----------------------------------------CREATING VECTOR STORES-------------------------------------------------####   
     @st.cache_resource
-    def create_vector_store(_self):
+    
+    def create_vector_store(_self, _vector_store_type="qdrant"):
+        
+        text_splitter = RecursiveCharacterTextSplitter(
+                    chunk_size=1000,
+                    chunk_overlap=200,
+                    separators=["\n\n", "\n", " ", ""]
+                )
+        texts = text_splitter.split_documents(_self.document_loader())
+        
         try:
-            pc = Pinecone(api_key=PINECONE_API_KEY)
-            index_name = "whatsapp-chats"
-            index = pc.Index(index_name)
+            ####-----------------------------PINECONE----------------------------------#### 
+            if _vector_store_type == "pinecone":
+                pc = Pinecone(api_key=PINECONE_API_KEY)
+                index_name = "whatsapp-chats"
+                index = pc.Index(index_name)
+                
+                # Create and return the vector store
+                vector_store = PineconeVectorStore.from_documents(
+                    documents=texts,
+                    # documents=_self.document_loader()
+                    embedding=_self.load_embeddings(),
+                    index_name=index_name,
+                    namespace="whatsapp_analysis"
+                )
+                
+                return vector_store
+            ####-----------------------------Quant DB----------------------------------#### 
+            elif _vector_store_type == "qdrant":
+                os.environ["QDRANT_HOST"]="63253eb8-6b3b-4aba-95e3-34da6a5268d7.us-east4-0.gcp.cloud.qdrant.io:6333"
+                os.environ["QDRANT_COLLECTION_NAME"]="my-collection"
+                
+                vector_store = Qdrant(
+                    client=qdrant_client.QdrantClient(
+                        host=os.getenv("QDRANT_HOST"),
+                        # host="localhost",
+                        api_key=os.getenv("QDRANT_API_KEY"),
+                        port=6333
+                    ),
+                    collection_name=os.getenv("QDRANT_COLLECTION_NAME"),
+                    embeddings=_self.load_embeddings()
+                )
+                
+                return vector_store
+            ####-----------------------------ChromaDB----------------------------------####
+            elif _vector_store_type == "chromadb":
+                vector_store = Chroma.from_documents(
+                    documents=texts,
+                    embedding=_self.load_embeddings(),
+                    persist_directory="db/chroma"
+                )
+                vector_store.persist()
+                
+                return vector_store
             
-            
-            # documents = _self.document_loader()
-            # embedded= [embeddings.embed_documents(doc) for doc in documents]
-            
-            
-            # namespace = "wondervector5000"
-            # docsearch = PineconeVectorStore.from_documents(
-            #     documents=_self.document_loader(),
-            #     index_name=index_name,
-            #     embedding=embeddings, 
-            #     namespace=namespace 
-            # )
-            # time.sleep(1)
-            
-            text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=500,
-                chunk_overlap=50,
-                separators=["\n\n", "\n", " ", ""]
-            )
-            texts = text_splitter.split_documents(_self.document_loader())
-            
-            # Create and return the vector store
-            # embeddings = _self.load_embeddings()
-            vector_store = PineconeVectorStore.from_documents(
-                documents=texts,
-                embedding=_self.load_embeddings(),
-                index_name=index_name,
-                namespace="whatsapp_analysis"
-            )
-            # vector_store = langchain_pinecone(index=index,
-            #                                   embedding=_self.load_embeddings().embed_query, text_key="text")
             
             print(f"Vector store created with {len(texts)} documents")
-            return vector_store 
         
         except Exception as e:
             st.error(f"Error creating vector store: {str(e)}")
             return None
     
-    
+ 
+ ####--------------------------------------------RETRIEVER---------------------------------------------------####   
     def retriever(self, user_query):
         print('INSIDE RETRIEVER FILE')
+        
+        if os.path.exists(self.persist_directory) == False:
+            self.document_loader()
+            self.create_vector_store()
         
         if not self.vector_store:
             return {"error": "Vector store not initialized"}
@@ -162,31 +210,6 @@ class RetrievalAugmentGeneration:
             search_type="similarity",
             search_kwargs={"k": 4}
         )
-        
-        
-        # template_str = ("""You are analyzing WhatsApp group chats in pandas dataframe format. 
-        #                 Use the following context to answer questions and provide insights about the chats, such as:
-                        
-        #                 date, which represents the date the chats were created,
-        #                 time, which represents the time the chats were created,
-        #                 member, which represents the name of the group member or participant who sent the chat,
-        #                 message, which represents the message sent by a group member,
-        #                 message_type, which represents the type of message (can either be text or media),
-        #                 message_length, which represents the length of the message
-        #                 reaction_count, which represents the number of reactions to a message
-        #                 word_count, which represents the number of words in a message
-        #                 mentions, which represents the number of times a member was tagged in a message
-        #                 emojis & emoji, which represents the number of emojis in a message
-        #                 urlcount, which represents the number of URLs in a message 
-                         
-        #                 most active group participants, frequent words, active dates, and any other relevant information.
-        #                 Be as detailed as possible, but don't make up any information that's not from the context.
-        #                 If you don't know an answer, kindly ask the user to describe better.
-                        
-        #                 Context: {context}
-        #                 Human: {input}
-        #                 Assistant:
-        #             """)
         
         template_str = """You are an advanced AI assistant specializing in analyzing WhatsApp group chats. 
         You have access to a pandas dataframe containing detailed chat information. Your task is to provide 

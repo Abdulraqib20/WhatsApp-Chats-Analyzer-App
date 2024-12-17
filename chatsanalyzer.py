@@ -765,10 +765,21 @@ try:
         
         from dotenv import load_dotenv
         load_dotenv()
-        GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
-        PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
-        GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-        OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+        
+        ##-------------------------------------------------CLOUD----------------------------------------------------##
+        # GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+        # PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
+        # GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+        # OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+        # QDRANT_API_KEY = st.secrets["QDRANT_API_KEY"]
+        # MODEL_NAME = "llama3-70b-8192"
+
+        ##-------------------------------------------------LOCAL------------------------------------------------##
+        GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+        PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+        GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+        QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
         MODEL_NAME = "llama3-70b-8192"
 
         uploaded_file_csv = st.sidebar.file_uploader("Upload your processed WhatsApp chat CSV file", 
@@ -1106,7 +1117,7 @@ try:
                             print(params[key])
                         # PERFORMS THE FUNCTION CALL OUTSIDE THE LLM MODEL
                         if function_name == 'WhatsAppChatsInput':
-                            with st.status('Analyzing your WhatsApp Chats', expanded=True) as status:
+                            with st.status('Thinking....', expanded=True) as status:
                                 api_response = rag_class.retriever(params[key])
                                 status.update(label='Analysis Complete', state='complete', expanded=False)
                             
@@ -1144,80 +1155,23 @@ except NameError:
     
 #-------------------------------------------------------------FOOTER----------------------------------------------------#
 
-st.markdown(
-    """
+st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600&display=swap');
-
-        .footer-container {
-            font-family: 'Raleway', sans-serif;
-            margin-top: 50px;
-            padding: 30px 0;
-            background-color: #25D366;  /* WhatsApp green */
-            width: 100vw;
-            position: absolute;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-            # overflow: hidden;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .footer-text {
-            color: #ffffff;
-            font-size: 20px;
-            font-weight: 300;
-            text-align: center;
-            margin: 0;
-            padding: 0 20px;
-            position: relative;
-        }
-
-        .footer-link {
-            color: #075E54;  /* WhatsApp dark green */
-            font-weight: 600;
-            text-decoration: none;
-            position: relative;
-            transition: all 0.3s ease;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-
-        .footer-link:hover {
-            background-color: rgba(7, 94, 84, 0.1);  /* Slightly darker on hover */
-            box-shadow: 0 0 15px rgba(7, 94, 84, 0.2);
-        }
-
-        .footer-heart {
-            display: inline-block;
-            color: #FF0000;  /* Red heart */
-            font-size: 35px;
-            animation: pulse 1.5s ease infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
+    .footer {
+        position: fixed;
+        bottom: 0;
+        text-align: center;
+    }
+    .footer a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .footer a:hover {
+        text-decoration: underline;
+    }
     </style>
+    """, unsafe_allow_html=True)
 
-    <div class="footer-container">
-        <div class="footer-content">
-            <p class="footer-text">
-                Crafted with <span class="footer-heart">♥</span> by 
-                <a href="https://github.com/Abdulraqib20" target="_blank" class="footer-link">raqibcodes</a>
-            </p>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# Footer content
+st.markdown('<div class="footer">Developed with ❤️ by <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a></div>', unsafe_allow_html=True)
