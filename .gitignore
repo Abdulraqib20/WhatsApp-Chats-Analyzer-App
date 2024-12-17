@@ -2,3 +2,4 @@
 *.csv
 .csv
 temp.csv
+.toml
