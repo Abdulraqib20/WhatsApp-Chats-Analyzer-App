@@ -1153,7 +1153,7 @@ try:
 except NameError:
     st.error('Unable to load the Stats. Please Upload a WhatsApp Chats .txt file.')
     
-#-------------------------------------------------------------FOOTER----------------------------------------------------#
+# #---------------------------------------------------------FOOTER------------------------------------------------
 
 st.markdown("""
     <style>
@@ -1175,3 +1175,4 @@ st.markdown("""
 
 # Footer content
 st.markdown('<div class="footer">Developed with ❤️ by <a href="https://github.com/Abdulraqib20" target="_blank">raqibcodes</a></div>', unsafe_allow_html=True)
+
